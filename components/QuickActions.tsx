@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FileText, Target, Bell, CircleHelp as HelpCircle } from 'lucide-react-native';
+import { Link } from 'expo-router';
 
 const actions = [
   {
@@ -33,13 +34,58 @@ const actions = [
   },
 ];
 
-export function QuickActions() {
+const getHrefForAction = (title: string) => {
+  switch (title) {
+    case 'Full Report':
+      return '/report';
+    case 'Set Goals':
+      return '/insights';
+    case 'Alerts':
+      return '/notifications';
+    default:
+      return null;
+  }
+};
+
+interface QuickActionsProps {
+  onOpenChat: () => void;
+}
+
+export function QuickActions({ onOpenChat }: QuickActionsProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quick Actions</Text>
       <View style={styles.actionsGrid}>
         {actions.map((action, index) => {
           const IconComponent = action.icon;
+          const href = getHrefForAction(action.title);
+
+          if (action.title === 'Help') {
+            return (
+              <TouchableOpacity key={index} style={styles.actionItem} onPress={onOpenChat}>
+                <View style={[styles.iconContainer, { backgroundColor: action.backgroundColor }]}>
+                  <IconComponent size={24} color={action.color} />
+                </View>
+                <Text style={styles.actionTitle}>{action.title}</Text>
+                <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+              </TouchableOpacity>
+            );
+          }
+
+          if (href) {
+            return (
+              <Link key={index} href={href} asChild>
+                <TouchableOpacity style={styles.actionItem}>
+                  <View style={[styles.iconContainer, { backgroundColor: action.backgroundColor }]}>
+                    <IconComponent size={24} color={action.color} />
+                  </View>
+                  <Text style={styles.actionTitle}>{action.title}</Text>
+                  <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+                </TouchableOpacity>
+              </Link>
+            );
+          }
+
           return (
             <TouchableOpacity key={index} style={styles.actionItem}>
               <View style={[styles.iconContainer, { backgroundColor: action.backgroundColor }]}>

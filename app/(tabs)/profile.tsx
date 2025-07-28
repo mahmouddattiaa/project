@@ -9,6 +9,7 @@ import {
   Switch,
 } from 'react-native';
 import { User, Settings, Bell, Shield, CircleHelp as HelpCircle, LogOut, ChevronRight, CreditCard as Edit, CreditCard, FileText, Smartphone, Mail } from 'lucide-react-native';
+import { Link } from 'expo-router';
 
 const profileData = {
   name: 'Sarah Johnson',
@@ -32,7 +33,7 @@ export default function ProfileScreen() {
     push: profileData.pushNotifications,
     weekly: profileData.weeklyReports,
   });
-  
+
   const [settings, setSettings] = useState({
     darkMode: profileData.darkMode,
     biometric: profileData.biometric,
@@ -67,7 +68,7 @@ export default function ProfileScreen() {
               <Text style={styles.memberSince}>Member since {profileData.memberSince}</Text>
             </View>
           </View>
-          
+
           <View style={styles.profileStats}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{profileData.creditScore}</Text>
@@ -87,7 +88,7 @@ export default function ProfileScreen() {
         {/* Contact Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
-          
+
           <TouchableOpacity style={styles.contactItem}>
             <Mail size={20} color="#6B7280" />
             <View style={styles.contactInfo}>
@@ -220,7 +221,7 @@ export default function ProfileScreen() {
         {/* Marketing Preferences */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Marketing Preferences</Text>
-          
+
           <View style={styles.marketingCard}>
             <Text style={styles.marketingTitle}>Personalized Offers</Text>
             <Text style={styles.marketingDescription}>
@@ -233,10 +234,12 @@ export default function ProfileScreen() {
         </View>
 
         {/* Logout */}
-        <TouchableOpacity style={styles.logoutButton}>
-          <LogOut size={20} color="#EF4444" />
-          <Text style={styles.logoutText}>Sign Out</Text>
-        </TouchableOpacity>
+        <Link href="/signup" asChild>
+          <TouchableOpacity style={styles.logoutButton}>
+            <LogOut size={20} color="#EF4444" />
+            <Text style={styles.logoutText}>Sign Out</Text>
+          </TouchableOpacity>
+        </Link>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Version 2.1.0</Text>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,9 @@ import { Bell, TrendingUp, Shield, CreditCard, TriangleAlert as AlertTriangle, C
 import { CreditScoreGauge } from '@/components/CreditScoreGauge';
 import { ScoreFactors } from '@/components/ScoreFactors';
 import { QuickActions } from '@/components/QuickActions';
+import { Link } from 'expo-router';
+import { NotificationPopup } from '@/components/NotificationPopup';
+import { ChatPopup } from '@/components/ChatPopup';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +22,8 @@ export default function HomeScreen() {
   const creditScore = 742;
   const scoreChange = +12;
   const lastUpdated = 'Updated 2 days ago';
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isChatVisible, setChatVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,7 +34,7 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Good morning,</Text>
             <Text style={styles.userName}>Sarah Johnson</Text>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity style={styles.notificationButton} onPress={() => setPopupVisible(true)}>
             <Bell size={24} color="#374151" />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
@@ -41,9 +46,9 @@ export default function HomeScreen() {
             <Text style={styles.scoreTitle}>Your Credit Score</Text>
             <Text style={styles.lastUpdated}>{lastUpdated}</Text>
           </View>
-          
+
           <CreditScoreGauge score={creditScore} />
-          
+
           <View style={styles.scoreDetails}>
             <View style={styles.scoreChange}>
               <TrendingUp size={16} color="#059669" />
@@ -52,14 +57,16 @@ export default function HomeScreen() {
             <Text style={styles.scoreRange}>Good (670-739)</Text>
           </View>
 
-          <TouchableOpacity style={styles.viewReportButton}>
-            <Text style={styles.viewReportText}>View Full Report</Text>
-            <ChevronRight size={18} color="#2563EB" />
-          </TouchableOpacity>
+          <Link href="/report" asChild>
+            <TouchableOpacity style={styles.viewReportButton}>
+              <Text style={styles.viewReportText}>View Full Report</Text>
+              <ChevronRight size={18} color="#2563EB" />
+            </TouchableOpacity>
+          </Link>
         </View>
 
         {/* Quick Actions */}
-        <QuickActions />
+        <QuickActions onOpenChat={() => setChatVisible(true)} />
 
         {/* Score Factors */}
         <ScoreFactors />
@@ -70,7 +77,7 @@ export default function HomeScreen() {
             <Shield size={20} color="#2563EB" />
             <Text style={styles.cardTitle}>Credit Monitoring</Text>
           </View>
-          
+
           <View style={styles.alertItem}>
             <View style={styles.alertIcon}>
               <AlertTriangle size={16} color="#D97706" />
@@ -111,6 +118,8 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      <NotificationPopup visible={isPopupVisible} onClose={() => setPopupVisible(false)} />
+      <ChatPopup visible={isChatVisible} onClose={() => setChatVisible(false)} />
     </SafeAreaView>
   );
 }
