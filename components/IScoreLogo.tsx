@@ -10,11 +10,11 @@ export default function IScoreLogo({ size = 'medium' }: IScoreLogoProps) {
     const getSize = () => {
         switch (size) {
             case 'small':
-                return { container: 80, dot: 6, text: 16, height: 32 };
+                return { container: 100, dot: 8, text: 18, height: 36, spacing: 6 };
             case 'large':
-                return { container: 160, dot: 10, text: 28, height: 48 };
+                return { container: 180, dot: 14, text: 32, height: 56, spacing: 12 };
             default:
-                return { container: 120, dot: 8, text: 22, height: 40 };
+                return { container: 140, dot: 10, text: 24, height: 44, spacing: 8 };
         }
     };
 
@@ -28,72 +28,64 @@ export default function IScoreLogo({ size = 'medium' }: IScoreLogoProps) {
         },
         logoContainer: {
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             justifyContent: 'center',
+            paddingBottom: 0,
+            paddingHorizontal: 2,
+            paddingVertical: 1,
         },
         iContainer: {
             alignItems: 'center',
-            marginRight: 4,
+            marginRight: dimensions.spacing,
+            paddingBottom: 0,
         },
         dot: {
             width: dimensions.dot,
             height: dimensions.dot,
             borderRadius: dimensions.dot / 2,
-            marginBottom: 2,
+            marginBottom: 4,
         },
         stem: {
-            width: dimensions.dot * 0.6,
-            height: dimensions.text * 0.8,
-            borderRadius: dimensions.dot * 0.3,
+            width: dimensions.dot * 0.5,
+            height: dimensions.text * 0.9,
+            borderRadius: dimensions.dot * 0.25,
         },
         scoreText: {
             fontSize: dimensions.text,
             fontWeight: '600',
-            letterSpacing: -0.5,
+            letterSpacing: -0.8,
+            textShadowColor: 'rgba(0,0,0,0.1)',
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 2,
         },
     });
 
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
+                {/* "i" with teal dot and stem */}
                 <View style={styles.iContainer}>
-                    <LinearGradient
-                        colors={['#20B2AA', '#6B46C1']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.dot}
-                    />
-                    <LinearGradient
-                        colors={['#20B2AA', '#6B46C1']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.stem}
-                    />
+                    {/* Teal dot */}
+                    <View style={[styles.dot, { backgroundColor: '#20B2AA' }]} />
+                    {/* Teal stem */}
+                    <View style={[styles.stem, { backgroundColor: '#20B2AA' }]} />
                 </View>
-                <View style={{ position: 'relative' }}>
-                    <LinearGradient
-                        colors={['#20B2AA', '#6B46C1']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            borderRadius: 4,
-                            opacity: 0.9,
-                        }}
-                    />
-                    <Text style={[styles.scoreText, { 
-                        color: '#FFFFFF',
-                        position: 'relative',
-                        paddingHorizontal: 8,
-                        paddingVertical: 2,
-                    }]}>
+                
+                {/* "score" with purple gradient */}
+                <LinearGradient
+                    colors={['#8B5CF6', '#6366F1']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                        borderRadius: 4,
+                        paddingHorizontal: 3,
+                        paddingVertical: 1,
+                    }}
+                >
+                    <Text style={[styles.scoreText, { color: '#FFFFFF' }]}>
                         score
                     </Text>
-                </View>
+                </LinearGradient>
             </View>
         </View>
     );

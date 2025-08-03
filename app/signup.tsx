@@ -8,20 +8,23 @@ import {
     TouchableOpacity,
     Dimensions,
     Modal,
+    Image,
 } from 'react-native';
-import { ChevronDown, ChevronRight, Calendar } from 'lucide-react-native';
+import { ChevronDown, ChevronRight, Calendar, Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import IScoreLogo from '../components/IScoreLogo';
 
 export default function SignUpScreen() {
-    const [egyptianId, setEgyptianId] = useState('');
+    const [nationalIdOrPassport, setNationalIdOrPassport] = useState('');
     const [fullName, setFullName] = useState('');
     const [mobileNumber, setMobileNumber] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [gender, setGender] = useState('');
     const [nationality, setNationality] = useState('');
     const [email, setEmail] = useState('');
-    const [passport, setPassport] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [heardFrom, setHeardFrom] = useState('');
     const [otherSpecify, setOtherSpecify] = useState('');
     const [isRobotChecked, setIsRobotChecked] = useState(false);
@@ -45,12 +48,24 @@ export default function SignUpScreen() {
     const isMobile = screenData.width < 500; // Using 500px as breakpoint for better mobile detection
 
     // Validation functions
-    const validateEgyptianId = (id: string) => {
-        return /^\d{14}$/.test(id);
+    const validateNationalIdOrPassport = (value: string) => {
+        // Check if it's a 14-digit Egyptian National ID
+        const egyptianIdRegex = /^\d{14}$/;
+        if (egyptianIdRegex.test(value)) {
+            return true;
+        }
+        
+        // Check if it's a valid passport (at least 6 characters, letters and numbers)
+        const passportRegex = /^[A-Z0-9]{6,}$/i;
+        if (passportRegex.test(value.trim())) {
+            return true;
+        }
+        
+        return false;
     };
 
     const validateFullName = (name: string) => {
-        return name.trim().length >= 2 && /^[\u0600-\u06FF\s]+$/.test(name.trim());
+        return name.trim().length >= 2;
     };
 
     const validateMobileNumber = (number: string) => {
@@ -74,21 +89,67 @@ export default function SignUpScreen() {
         return emailRegex.test(email.trim());
     };
 
-    const validatePassport = (passport: string) => {
-        return passport.trim().length >= 6 && /^[A-Z0-9]+$/i.test(passport.trim());
+    const validatePassword = (password: string) => {
+        // Password must be at least 8 characters long
+        if (password.length < 8) return { isValid: false, errors: ['Must be at least 8 characters'] };
+        
+        const errors = [];
+        
+        // Check for uppercase letter
+        if (!/[A-Z]/.test(password)) {
+            errors.push('Must contain at least one uppercase letter');
+        }
+        
+        // Check for lowercase letter
+        if (!/[a-z]/.test(password)) {
+            errors.push('Must contain at least one lowercase letter');
+        }
+        
+        // Check for number
+        if (!/\d/.test(password)) {
+            errors.push('Must contain at least one number');
+        }
+        
+        // Check for special character
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            errors.push('Must contain at least one special character');
+        }
+        
+        return { isValid: errors.length === 0, errors };
+    };
+
+    const validateConfirmPassword = (password: string, confirmPassword: string) => {
+        return password === confirmPassword && password.length > 0;
+    };
+
+    const getPasswordStrength = (password: string) => {
+        if (password.length === 0) return { strength: 'None', color: '#E2E8F0', percentage: 0 };
+        
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+        
+        if (score < 2) return { strength: 'Weak', color: '#E53E3E', percentage: 20 };
+        if (score < 4) return { strength: 'Medium', color: '#DD6B20', percentage: 60 };
+        if (score < 5) return { strength: 'Strong', color: '#38A169', percentage: 80 };
+        return { strength: 'Very Strong', color: '#38A169', percentage: 100 };
     };
 
     // Check if all required fields are filled and valid
     const isFormValid = () => {
         return (
-            validateEgyptianId(egyptianId) &&
+            validateNationalIdOrPassport(nationalIdOrPassport) &&
             validateFullName(fullName) &&
             validateMobileNumber(mobileNumber) &&
             validateDateOfBirth(dateOfBirth) &&
             gender !== '' &&
             nationality !== '' &&
             validateEmail(email) &&
-            validatePassport(passport) &&
+            validatePassword(password).isValid &&
+            validateConfirmPassword(password, confirmPassword) &&
             isRobotChecked &&
             isTermsAccepted
         );
@@ -120,15 +181,26 @@ export default function SignUpScreen() {
             elevation: 8,
         },
         logoContainer: {
-            marginBottom: 20,
-            padding: 8,
-            borderRadius: 16,
-            backgroundColor: 'rgba(32, 178, 170, 0.05)',
-            shadowColor: '#20B2AA',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 12,
-            elevation: 4,
+            marginBottom: 10,
+            padding: isMobile ? 5 : 16,
+            borderRadius: 20,
+            backgroundColor: 'rgba(139, 92, 246, 0.08)',
+            shadowColor: '#8B5CF6',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.15,
+            shadowRadius: 20,
+            elevation: 8,
+            alignItems: 'center' as const,
+            justifyContent: 'center' as const,
+            borderWidth: 1,
+            borderColor: 'rgba(139, 92, 246, 0.1)',
+            overflow: 'hidden' as const,
+        },
+        logoImage: {
+            width: isMobile ? 140 : 180,
+            height: isMobile ? 50 : 65,
+            maxWidth: '90%',
+            maxHeight: '90%',
         },
         welcomeText: {
             fontSize: isMobile ? 24 : 28,
@@ -212,6 +284,77 @@ export default function SignUpScreen() {
             marginTop: 6,
             marginLeft: 4,
             fontWeight: '500' as const,
+        },
+        passwordContainer: {
+            position: 'relative' as const,
+            width: '100%',
+        },
+        passwordInputContainer: {
+            flexDirection: 'row' as const,
+            alignItems: 'center' as const,
+            backgroundColor: '#FFFFFF',
+            borderWidth: 2,
+            borderColor: '#E2E8F0',
+            borderRadius: 12,
+            paddingHorizontal: isMobile ? 16 : 20,
+            paddingVertical: isMobile ? 16 : 18,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.05,
+            shadowRadius: 3,
+            elevation: 2,
+        },
+        passwordInput: {
+            flex: 1,
+            fontSize: isMobile ? 16 : 17,
+            color: '#2D3748',
+            paddingRight: 12,
+        },
+        passwordToggle: {
+            padding: 4,
+        },
+        passwordStrengthContainer: {
+            marginTop: 8,
+            marginBottom: 4,
+        },
+        passwordStrengthBar: {
+            height: 4,
+            backgroundColor: '#E2E8F0',
+            borderRadius: 2,
+            overflow: 'hidden' as const,
+            marginBottom: 8,
+        },
+        passwordStrengthFill: {
+            height: '100%',
+            borderRadius: 2,
+        },
+        passwordStrengthText: {
+            fontSize: 12,
+            fontWeight: '600' as const,
+            marginBottom: 4,
+        },
+        passwordCriteria: {
+            marginTop: 4,
+        },
+        passwordCriteriaItem: {
+            flexDirection: 'row' as const,
+            alignItems: 'center' as const,
+            marginBottom: 2,
+        },
+        passwordCriteriaIcon: {
+            fontSize: 12,
+            marginRight: 6,
+            fontWeight: 'bold' as const,
+        },
+        passwordCriteriaText: {
+            fontSize: 12,
+            color: '#718096',
+        },
+        passwordCriteriaValid: {
+            color: '#38A169',
+        },
+        passwordCriteriaInvalid: {
+            color: '#E53E3E',
         },
         segmentedInputContainer: {
             flexDirection: 'row' as const,
@@ -346,9 +489,9 @@ export default function SignUpScreen() {
             backgroundColor: '#FFFFFF',
         },
         checkboxChecked: {
-            backgroundColor: '#38A169',
-            borderColor: '#38A169',
-            shadowColor: '#38A169',
+            backgroundColor: '#8B5CF6',
+            borderColor: '#8B5CF6',
+            shadowColor: '#8B5CF6',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 4,
@@ -373,7 +516,7 @@ export default function SignUpScreen() {
         },
         termsLink: {
             fontSize: isMobile ? 15 : 16,
-            color: '#20B2AA',
+            color: '#8B5CF6',
             textDecorationLine: 'underline' as const,
             fontWeight: '600' as const,
         },
@@ -381,11 +524,11 @@ export default function SignUpScreen() {
             flexDirection: 'row' as const,
             alignItems: 'center' as const,
             justifyContent: 'center' as const,
-            backgroundColor: '#20B2AA',
+            backgroundColor: '#8B5CF6',
             borderRadius: 16,
             paddingVertical: isMobile ? 18 : 20,
             marginTop: 32,
-            shadowColor: '#20B2AA',
+            shadowColor: '#8B5CF6',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 12,
@@ -439,9 +582,9 @@ export default function SignUpScreen() {
             marginVertical: 2,
         },
         datePickerItemSelected: {
-            backgroundColor: '#20B2AA',
+            backgroundColor: '#8B5CF6',
             borderBottomColor: 'transparent',
-            shadowColor: '#20B2AA',
+            shadowColor: '#8B5CF6',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 4,
@@ -479,10 +622,10 @@ export default function SignUpScreen() {
         datePickerConfirmButton: {
             flex: 1,
             paddingVertical: 14,
-            backgroundColor: '#20B2AA',
+            backgroundColor: '#8B5CF6',
             borderRadius: 12,
             alignItems: 'center' as const,
-            shadowColor: '#20B2AA',
+            shadowColor: '#8B5CF6',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 4,
@@ -707,14 +850,14 @@ export default function SignUpScreen() {
         if (!isFormValid()) {
             let errorMessage = 'Please fix the following errors:\n';
             
-            if (!validateEgyptianId(egyptianId)) {
-                errorMessage += '• Egyptian ID must be exactly 14 digits\n';
+            if (!validateNationalIdOrPassport(nationalIdOrPassport)) {
+                errorMessage += '• National ID must be exactly 14 digits OR Passport must be at least 6 characters (letters and numbers)\n';
             }
             if (!validateFullName(fullName)) {
-                errorMessage += '• Full name must be in Arabic and at least 2 characters\n';
+                errorMessage += '• Full name must be at least 2 characters\n';
             }
             if (!validateMobileNumber(mobileNumber)) {
-                errorMessage += '• Mobile number must be 11 digits starting with 1\n';
+                errorMessage += '• Mobile number must be 11 digits starting with 0\n';
             }
             if (!validateDateOfBirth(dateOfBirth)) {
                 errorMessage += '• Date of birth must be valid (DD-MM-YYYY) and age 18-100\n';
@@ -728,8 +871,15 @@ export default function SignUpScreen() {
             if (!validateEmail(email)) {
                 errorMessage += '• Please enter a valid email address\n';
             }
-            if (!validatePassport(passport)) {
-                errorMessage += '• Passport must be at least 6 characters (letters and numbers)\n';
+            if (!validatePassword(password).isValid) {
+                const passwordErrors = validatePassword(password).errors;
+                errorMessage += '• Password requirements not met:\n';
+                passwordErrors.forEach(error => {
+                    errorMessage += `  - ${error}\n`;
+                });
+            }
+            if (!validateConfirmPassword(password, confirmPassword)) {
+                errorMessage += '• Passwords do not match\n';
             }
             if (!isRobotChecked) {
                 errorMessage += '• Please confirm that you are not a robot\n';
@@ -751,9 +901,13 @@ export default function SignUpScreen() {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.logoHeader}>
                 <View style={styles.logoContainer}>
-                    <IScoreLogo size={isMobile ? 'medium' : 'large'} />
+                    <Image 
+                        source={require('../assets/images/logo.svg')}
+                        style={styles.logoImage}
+                        resizeMode="cover"
+                    />
                 </View>
-                <Text style={styles.welcomeText}>Welcome to iScore</Text>
+                <Text style={styles.welcomeText}>Welcome to iscore</Text>
                 <Text style={styles.subtitleText}>Your Credit Score Journey Starts Here</Text>
             </View>
             
@@ -761,37 +915,35 @@ export default function SignUpScreen() {
 
             <View style={isMobile ? styles.column : styles.row}>
                 <View style={[styles.inputGroup, isMobile ? styles.fullWidth : styles.halfWidth]}>
-                    <Text style={styles.label}>Egyptian ID *</Text>
+                    <Text style={styles.label}>National ID or Passport *</Text>
                     <TextInput 
                         style={[
                             styles.input,
-                            egyptianId.length > 0 && !validateEgyptianId(egyptianId) && styles.inputError
+                            nationalIdOrPassport.length > 0 && !validateNationalIdOrPassport(nationalIdOrPassport) && styles.inputError
                         ]}
-                        placeholder="0-14"
+                        placeholder="Enter 14-digit National ID or Passport"
                         placeholderTextColor={'#9CA3AF'}
-                        keyboardType="numeric"
-                        maxLength={14}
-                        value={egyptianId}
-                        onChangeText={setEgyptianId}
+                        value={nationalIdOrPassport}
+                        onChangeText={setNationalIdOrPassport}
                     />
-                    {egyptianId.length > 0 && !validateEgyptianId(egyptianId) && (
-                        <Text style={styles.errorText}>Must be exactly 14 digits</Text>
+                    {nationalIdOrPassport.length > 0 && !validateNationalIdOrPassport(nationalIdOrPassport) && (
+                        <Text style={styles.errorText}>Must be 14-digit National ID or valid Passport (6+ characters)</Text>
                     )}
                 </View>
                 <View style={[styles.inputGroup, isMobile ? styles.fullWidth : styles.halfWidth]}>
-                    <Text style={styles.label}>Full Name(in Arabic as spicified in the national ID) *</Text>
+                    <Text style={styles.label}>Full Name (English or Arabic) *</Text>
                     <TextInput 
                         style={[
                             styles.input,
                             fullName.length > 0 && !validateFullName(fullName) && styles.inputError
                         ]} 
-                        placeholder="EX: محمود محمد عطية "
+                        placeholder="Enter your full name"
                         placeholderTextColor={'#9CA3AF'}
                         value={fullName}
                         onChangeText={setFullName}
                     />
                     {fullName.length > 0 && !validateFullName(fullName) && (
-                        <Text style={styles.errorText}>Must be in Arabic and at least 2 characters</Text>
+                        <Text style={styles.errorText}>Must be at least 2 characters</Text>
                     )}
                 </View>
             </View>
@@ -891,19 +1043,166 @@ export default function SignUpScreen() {
                         <Text style={styles.errorText}>Please enter a valid email address</Text>
                     )}
                 </View>
+                <View style={[styles.inputGroup, isMobile ? styles.fullWidth : styles.halfWidth]} />
+            </View>
+
+            <View style={isMobile ? styles.column : styles.row}>
                 <View style={[styles.inputGroup, isMobile ? styles.fullWidth : styles.halfWidth]}>
-                    <Text style={styles.label}>Passport (Optional: Helps us find your records more quickly) *</Text>
-                    <TextInput 
-                        style={[
-                            styles.input,
-                            passport.length > 0 && !validatePassport(passport) && styles.inputError
-                        ]} 
-                        placeholder="Enter your passport"
-                        value={passport}
-                        onChangeText={setPassport}
-                    />
-                    {passport.length > 0 && !validatePassport(passport) && (
-                        <Text style={styles.errorText}>At least 6 characters (letters and numbers only)</Text>
+                    <Text style={styles.label}>Password *</Text>
+                    <View style={styles.passwordContainer}>
+                        <View style={[
+                            styles.passwordInputContainer,
+                            password.length > 0 && !validatePassword(password).isValid && styles.inputError
+                        ]}>
+                            <TextInput 
+                                style={styles.passwordInput}
+                                placeholder="Enter your password" 
+                                placeholderTextColor={'#9CA3AF'}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                autoCapitalize="none"
+                            />
+                            <TouchableOpacity 
+                                style={styles.passwordToggle}
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeOff color="#718096" size={20} />
+                                ) : (
+                                    <Eye color="#718096" size={20} />
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                        
+                        {password.length > 0 && (
+                            <View style={styles.passwordStrengthContainer}>
+                                <View style={styles.passwordStrengthBar}>
+                                    <View 
+                                        style={[
+                                            styles.passwordStrengthFill,
+                                            { 
+                                                width: `${getPasswordStrength(password).percentage}%`,
+                                                backgroundColor: getPasswordStrength(password).color 
+                                            }
+                                        ]} 
+                                    />
+                                </View>
+                                <Text style={[
+                                    styles.passwordStrengthText,
+                                    { color: getPasswordStrength(password).color }
+                                ]}>
+                                    {getPasswordStrength(password).strength}
+                                </Text>
+                                
+                                <View style={styles.passwordCriteria}>
+                                    <View style={styles.passwordCriteriaItem}>
+                                        <Text style={[
+                                            styles.passwordCriteriaIcon,
+                                            password.length >= 8 ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            {password.length >= 8 ? '✓' : '✗'}
+                                        </Text>
+                                        <Text style={[
+                                            styles.passwordCriteriaText,
+                                            password.length >= 8 ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            At least 8 characters
+                                        </Text>
+                                    </View>
+                                    
+                                    <View style={styles.passwordCriteriaItem}>
+                                        <Text style={[
+                                            styles.passwordCriteriaIcon,
+                                            /[A-Z]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            {/[A-Z]/.test(password) ? '✓' : '✗'}
+                                        </Text>
+                                        <Text style={[
+                                            styles.passwordCriteriaText,
+                                            /[A-Z]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            One uppercase letter
+                                        </Text>
+                                    </View>
+                                    
+                                    <View style={styles.passwordCriteriaItem}>
+                                        <Text style={[
+                                            styles.passwordCriteriaIcon,
+                                            /[a-z]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            {/[a-z]/.test(password) ? '✓' : '✗'}
+                                        </Text>
+                                        <Text style={[
+                                            styles.passwordCriteriaText,
+                                            /[a-z]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            One lowercase letter
+                                        </Text>
+                                    </View>
+                                    
+                                    <View style={styles.passwordCriteriaItem}>
+                                        <Text style={[
+                                            styles.passwordCriteriaIcon,
+                                            /\d/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            {/\d/.test(password) ? '✓' : '✗'}
+                                        </Text>
+                                        <Text style={[
+                                            styles.passwordCriteriaText,
+                                            /\d/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            One number
+                                        </Text>
+                                    </View>
+                                    
+                                    <View style={styles.passwordCriteriaItem}>
+                                        <Text style={[
+                                            styles.passwordCriteriaIcon,
+                                            /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? '✓' : '✗'}
+                                        </Text>
+                                        <Text style={[
+                                            styles.passwordCriteriaText,
+                                            /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? styles.passwordCriteriaValid : styles.passwordCriteriaInvalid
+                                        ]}>
+                                            One special character
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+                <View style={[styles.inputGroup, isMobile ? styles.fullWidth : styles.halfWidth]}>
+                    <Text style={styles.label}>Confirm Password *</Text>
+                    <View style={[
+                        styles.passwordInputContainer,
+                        confirmPassword.length > 0 && !validateConfirmPassword(password, confirmPassword) && styles.inputError
+                    ]}>
+                        <TextInput 
+                            style={styles.passwordInput}
+                            placeholder="Confirm your password" 
+                            placeholderTextColor={'#9CA3AF'}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry={!showConfirmPassword}
+                            autoCapitalize="none"
+                        />
+                        <TouchableOpacity 
+                            style={styles.passwordToggle}
+                            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                            {showConfirmPassword ? (
+                                <EyeOff color="#718096" size={20} />
+                            ) : (
+                                <Eye color="#718096" size={20} />
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                    {confirmPassword.length > 0 && !validateConfirmPassword(password, confirmPassword) && (
+                        <Text style={styles.errorText}>Passwords do not match</Text>
                     )}
                 </View>
             </View>
