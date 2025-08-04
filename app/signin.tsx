@@ -8,8 +8,9 @@ import {
     TouchableOpacity,
     Dimensions,
 } from 'react-native';
-import { ChevronRight, Eye, EyeOff } from 'lucide-react-native';
+import { ChevronRight, Eye, EyeOff, Fingerprint } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export default function SignInScreen() {
     const [nationalIdOrEmail, setNationalIdOrEmail] = useState('');
@@ -17,6 +18,7 @@ export default function SignInScreen() {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [screenData, setScreenData] = useState(Dimensions.get('window'));
+    const [biometricAvailable, setBiometricAvailable] = useState(true); 
     const router = useRouter();
 
     useEffect(() => {
@@ -25,6 +27,36 @@ export default function SignInScreen() {
         };
 
         const subscription = Dimensions.addEventListener('change', onChange);
+        
+        // Check if biometric authentication is available
+        const checkBiometricSupport = async () => {
+            try {
+                console.log('Starting biometric check...');
+                const hasHardware = await LocalAuthentication.hasHardwareAsync();
+                const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+                const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
+                
+                console.log('Biometric hardware available:', hasHardware);
+                console.log('Biometric enrolled:', isEnrolled);
+                console.log('Supported types:', supportedTypes);
+                
+                const available = hasHardware && isEnrolled;
+                console.log('Setting biometricAvailable to:', available);
+                setBiometricAvailable(available);
+                
+                // For testing purposes, force it to true if needed
+                if (!available) {
+                    setBiometricAvailable(true);
+                }
+            } catch (error) {
+                console.error('Error checking biometric availability:', error);
+                // For testing, set to true anyway
+                setBiometricAvailable(true);
+            }
+        };
+        
+        checkBiometricSupport();
+        
         return () => subscription?.remove();
     }, []);
 
@@ -57,6 +89,26 @@ export default function SignInScreen() {
             validateNationalIdOrEmail(nationalIdOrEmail) &&
             validatePassword(password)
         );
+    };
+
+    // Handle biometric authentication
+    const handleBiometricAuth = async () => {
+        try {
+            const result = await LocalAuthentication.authenticateAsync({
+                promptMessage: 'Authenticate with Biometrics',
+                fallbackLabel: 'Use password instead',
+                cancelLabel: 'Cancel',
+            });
+
+            if (result.success) {
+                // In a real app, you'd verify with your backend here
+                // For now, just navigate to the main app
+                router.replace('/(tabs)');
+            }
+        } catch (error) {
+            console.error('Biometric authentication error:', error);
+            alert('To be implemented soon!!!!!');
+        }
     };
 
     const getStyles = () => StyleSheet.create({
@@ -297,6 +349,27 @@ export default function SignInScreen() {
             fontWeight: '600' as const,
             marginLeft: 4,
         },
+        biometricButton: {
+            flexDirection: 'row' as const,
+            alignItems: 'center' as const,
+            justifyContent: 'center' as const,
+            backgroundColor: '#34D399',
+            borderRadius: 16,
+            paddingVertical: isMobile ? 18 : 20,
+            marginBottom: 24,
+            shadowColor: '#34D399',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 8,
+        },
+        biometricButtonText: {
+            fontSize: isMobile ? 17 : 18,
+            fontWeight: '700' as const,
+            color: '#FFFFFF',
+            marginRight: 8,
+            letterSpacing: 0.3,
+        },
     });
 
     const styles = getStyles();
@@ -318,7 +391,7 @@ export default function SignInScreen() {
         
         // In a real app, you'd handle authentication here.
         // For now, we'll just navigate to the main page.
-        router.replace('/');
+        router.replace('/(tabs)');
     };
 
     const handleForgotPassword = () => {
@@ -439,6 +512,19 @@ export default function SignInScreen() {
                     <Text style={styles.signInButtonText}>Sign In</Text>
                     <ChevronRight color="#FFFFFF" size={20} />
                 </TouchableOpacity>
+
+                {/* Debugging: Check biometric availability */}
+                {/* console.log('Rendering biometric button check. biometricAvailable:', biometricAvailable) */}
+
+                {biometricAvailable && (
+                    <TouchableOpacity 
+                        style={styles.biometricButton}
+                        onPress={handleBiometricAuth}
+                    >
+                        <Text style={styles.biometricButtonText}>Sign In with Biometrics</Text>
+                        <Fingerprint color="#FFFFFF" size={20} />
+                    </TouchableOpacity>
+                )}
 
                 <View style={styles.divider}>
                     <View style={styles.dividerLine} />

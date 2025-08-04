@@ -234,7 +234,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Logout */}
-        <Link href="/signup" asChild>
+        <Link href="/signin" asChild>
           <TouchableOpacity style={styles.logoutButton}>
             <LogOut size={20} color="#EF4444" />
             <Text style={styles.logoutText}>Sign Out</Text>
