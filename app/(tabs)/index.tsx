@@ -54,7 +54,6 @@ export default function HomeScreen() {
               <TrendingUp size={16} color="#059669" />
               <Text style={styles.scoreChangeText}>+{scoreChange} points</Text>
             </View>
-            <Text style={styles.scoreRange}>Good (670-739)</Text>
           </View>
 
           <Link href="/report" asChild>
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 16,
     paddingBottom: 16,
   },
   greeting: {

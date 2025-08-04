@@ -1,26 +1,64 @@
 import { Tabs } from 'expo-router';
 import { Chrome as Home, FileText, TrendingUp, User } from 'lucide-react-native';
+import { View, Text } from 'react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: '#FFFFFF',
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 1,
+          borderBottomColor: '#E5E7EB',
+          height: 80,
+        },
+        headerTintColor: '#1F2937',
+        headerTitleAlign: 'center',
+        headerTitle: () => (
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+              <Text style={{ 
+                fontSize: 30, 
+                fontWeight: '700',
+                color: '#00BCD4',
+                letterSpacing: -0.2,
+              }}>
+                i
+              </Text>
+              <Text style={{ 
+                fontSize: 30, 
+                fontWeight: '700',
+                color: '#8B5CF6',
+                letterSpacing: -0.2,
+              }}>
+                score
+              </Text>
+            </View>
+          </View>
+        ),
         tabBarStyle: {
-          backgroundColor: '#1E3A8A',
-          borderTopColor: '#1E3A8A',
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E5E7EB',
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
           height: 80,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
           marginTop: 4,
         },
-        tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#93C5FD',
+        tabBarActiveTintColor: '#8B5CF6',
+        tabBarInactiveTintColor: '#6B7280',
       }}>
       <Tabs.Screen
         name="index"

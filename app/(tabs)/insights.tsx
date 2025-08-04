@@ -143,7 +143,7 @@ export default function InsightsScreen() {
               </View>
             </View>
             <Text style={styles.goalDescription}>
-              You're 58 points away from excellent credit!
+              You're 58 points away from your goal!
             </Text>
             <TouchableOpacity style={styles.goalButton}>
               <Text style={styles.goalButtonText}>View Action Plan</Text>
@@ -238,39 +238,6 @@ export default function InsightsScreen() {
               <ChevronRight size={16} color="#9CA3AF" />
             </TouchableOpacity>
           ))}
-        </View>
-
-        {/* Credit Score Ranges */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Credit Score Ranges</Text>
-          
-          <View style={styles.rangeCard}>
-            <View style={styles.rangeItem}>
-              <View style={[styles.rangeDot, { backgroundColor: '#EF4444' }]} />
-              <Text style={styles.rangeLabel}>Poor (300-579)</Text>
-              <Text style={styles.rangeDescription}>Limited credit options</Text>
-            </View>
-            <View style={styles.rangeItem}>
-              <View style={[styles.rangeDot, { backgroundColor: '#F97316' }]} />
-              <Text style={styles.rangeLabel}>Fair (580-669)</Text>
-              <Text style={styles.rangeDescription}>Some credit options</Text>
-            </View>
-            <View style={styles.rangeItem}>
-              <View style={[styles.rangeDot, { backgroundColor: '#EAB308' }]} />
-              <Text style={styles.rangeLabel}>Good (670-739)</Text>
-              <Text style={styles.rangeDescription}>Good credit options</Text>
-            </View>
-            <View style={styles.rangeItem}>
-              <View style={[styles.rangeDot, { backgroundColor: '#22C55E' }]} />
-              <Text style={styles.rangeLabel}>Very Good (740-799)</Text>
-              <Text style={styles.rangeDescription}>Great credit options</Text>
-            </View>
-            <View style={styles.rangeItem}>
-              <View style={[styles.rangeDot, { backgroundColor: '#059669' }]} />
-              <Text style={styles.rangeLabel}>Excellent (800-850)</Text>
-              <Text style={styles.rangeDescription}>Best rates and terms</Text>
-            </View>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -546,41 +513,5 @@ const styles = StyleSheet.create({
   readTime: {
     fontSize: 12,
     color: '#9CA3AF',
-  },
-  rangeCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  rangeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  rangeDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  rangeLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    flex: 1,
-  },
-  rangeDescription: {
-    fontSize: 12,
-    color: '#6B7280',
   },
 });

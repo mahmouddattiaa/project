@@ -7,7 +7,6 @@ import {
     ScrollView,
     TouchableOpacity,
     Dimensions,
-    Image,
 } from 'react-native';
 import { ChevronRight, Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -336,11 +335,24 @@ export default function SignInScreen() {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.logoHeader}>
                 <View style={styles.logoContainer}>
-                    <Image 
-                        source={require('../assets/images/logo.svg')}
-                        style={styles.logoImage}
-                        resizeMode="cover"
-                    />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ 
+                            fontSize: 32, 
+                            fontWeight: '800',
+                            color: '#2563EB',
+                            letterSpacing: -0.5,
+                        }}>
+                            i
+                        </Text>
+                        <Text style={{ 
+                            fontSize: 32, 
+                            fontWeight: '800',
+                            color: '#8B5CF6',
+                            letterSpacing: -0.5,
+                        }}>
+                            score
+                        </Text>
+                    </View>
                 </View>
                 <Text style={styles.welcomeText}>Welcome Back</Text>
                 <Text style={styles.subtitleText}>Sign in to continue your credit journey</Text>

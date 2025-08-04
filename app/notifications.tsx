@@ -59,9 +59,29 @@ export default function NotificationsScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
+                <View style={styles.headerLeft}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ 
+                            fontSize: 20, 
+                            fontWeight: '800',
+                            color: '#2563EB',
+                            letterSpacing: -0.5,
+                        }}>
+                            i
+                        </Text>
+                        <Text style={{ 
+                            fontSize: 20, 
+                            fontWeight: '800',
+                            color: '#FFFFFF',
+                            letterSpacing: -0.5,
+                        }}>
+                            score
+                        </Text>
+                    </View>
+                </View>
                 <Text style={styles.headerTitle}>Notifications</Text>
                 <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-                    <X size={24} color="#111827" />
+                    <X size={24} color="#FFFFFF" />
                 </TouchableOpacity>
             </View>
             <FlatList
@@ -86,13 +106,33 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
+        backgroundColor: '#8B5CF6',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    headerLeft: {
+        minWidth: 60,
+    },
+    brandText: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#8B5CF6',
+        letterSpacing: -0.5,
+    },
+    headerLogo: {
+        width: 80,
+        height: 24,
+        resizeMode: 'contain',
     },
     headerTitle: {
-        fontSize: 28,
+        fontSize: 20,
         fontWeight: '700',
-        color: '#111827',
+        color: '#FFFFFF',
+        flex: 1,
+        textAlign: 'center',
     },
     closeButton: {
         padding: 8,

@@ -33,6 +33,35 @@ export default function TermsScreen() {
             marginRight: 16,
             padding: 8,
         },
+        headerCenter: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        brandContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        brandText: {
+            fontSize: 20,
+            fontWeight: '800',
+            color: '#8B5CF6',
+            letterSpacing: -0.5,
+        },
+        brandTextBlue: {
+            fontSize: 20,
+            fontWeight: '800',
+            color: '#2563EB',
+            letterSpacing: -0.5,
+        },
+        headerRight: {
+            width: 56,
+        },
+        headerLogo: {
+            width: 80,
+            height: 24,
+            resizeMode: 'contain',
+            marginRight: 12,
+        },
         headerTitle: {
             fontSize: isMobile ? 18 : 20,
             fontWeight: '600',
@@ -96,7 +125,13 @@ export default function TermsScreen() {
                 >
                     <ChevronLeft color="#1F2937" size={24} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Terms and Conditions</Text>
+                <View style={styles.headerCenter}>
+                    <View style={styles.brandContainer}>
+                        <Text style={styles.brandTextBlue}>i</Text>
+                        <Text style={styles.brandText}>score</Text>
+                    </View>
+                </View>
+                <View style={styles.headerRight} />
             </View>
 
             <ScrollView contentContainerStyle={styles.contentContainer}>
