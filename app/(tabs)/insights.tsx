@@ -18,6 +18,7 @@ import {
   CreditCard,
   Calendar,
 } from 'lucide-react-native';
+import { ScoreFactors } from '@/components/ScoreFactors';
 
 const recommendations = [
   {
@@ -150,6 +151,9 @@ export default function InsightsScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Credit Score Factors */}
+        <ScoreFactors />
 
         {/* Recommendations */}
         <View style={styles.section}>

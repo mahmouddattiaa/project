@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { Bell, TrendingUp, Shield, CreditCard, TriangleAlert as AlertTriangle, ChevronRight } from 'lucide-react-native';
 import { CreditScoreGauge } from '@/components/CreditScoreGauge';
-import { ScoreFactors } from '@/components/ScoreFactors';
 import { QuickActions } from '@/components/QuickActions';
 import { Link } from 'expo-router';
 import { NotificationPopup } from '@/components/NotificationPopup';
@@ -66,9 +65,6 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <QuickActions onOpenChat={() => setChatVisible(true)} />
-
-        {/* Score Factors */}
-        <ScoreFactors />
 
         {/* Alerts & Notifications */}
         <View style={styles.alertsCard}>
