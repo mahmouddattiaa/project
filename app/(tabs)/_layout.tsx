@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Chrome as Home, FileText, TrendingUp, User } from 'lucide-react-native';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -19,24 +19,14 @@ export default function TabLayout() {
         headerTitleAlign: 'center',
         headerTitle: () => (
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-              <Text style={{ 
-                fontSize: 30, 
-                fontWeight: '700',
-                color: '#00BCD4',
-                letterSpacing: -0.2,
-              }}>
-                i
-              </Text>
-              <Text style={{ 
-                fontSize: 30, 
-                fontWeight: '700',
-                color: '#8B5CF6',
-                letterSpacing: -0.2,
-              }}>
-                score
-              </Text>
-            </View>
+            <Image 
+              source={require('../../assets/images/logo.jpg')} 
+              style={{ 
+                width: 120, 
+                height: 40, 
+                resizeMode: 'contain' 
+              }} 
+            />
           </View>
         ),
         tabBarStyle: {

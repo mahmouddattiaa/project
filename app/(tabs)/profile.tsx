@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Switch,
+  Modal,
+  TextInput,
+  Alert,
 } from 'react-native';
-import { User, Settings, Bell, Shield, CircleHelp as HelpCircle, LogOut, ChevronRight, CreditCard as Edit, CreditCard, FileText, Smartphone, Mail } from 'lucide-react-native';
+import { User, Settings, Bell, Shield, CircleHelp as HelpCircle, LogOut, ChevronRight, CreditCard as Edit, CreditCard, FileText, Smartphone, Mail, X } from 'lucide-react-native';
 import { Link } from 'expo-router';
 
 const profileData = {
@@ -27,6 +30,19 @@ const profileData = {
 };
 
 export default function ProfileScreen() {
+  const [contactInfo, setContactInfo] = useState({
+    name: profileData.name,
+    email: profileData.email,
+    phone: profileData.phone,
+  });
+
+  const [editModal, setEditModal] = useState({
+    visible: false,
+    field: '',
+    title: '',
+    value: '',
+  });
+
   const [notifications, setNotifications] = useState({
     alerts: profileData.alertsEnabled,
     email: profileData.emailNotifications,
@@ -39,6 +55,11 @@ export default function ProfileScreen() {
     biometric: profileData.biometric,
   });
 
+  const [security, setSecurity] = useState({
+    pin: true,
+    biometric: true,
+  });
+
   const handleNotificationToggle = (type: string, value: boolean) => {
     setNotifications(prev => ({ ...prev, [type]: value }));
   };
@@ -47,12 +68,47 @@ export default function ProfileScreen() {
     setSettings(prev => ({ ...prev, [type]: value }));
   };
 
+  const handleSecurityToggle = (type: string, value: boolean) => {
+    setSecurity(prev => ({ ...prev, [type]: value }));
+  };
+
+  const openEditModal = (field: string, title: string, currentValue: string) => {
+    setEditModal({
+      visible: true,
+      field,
+      title,
+      value: currentValue,
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditModal({
+      visible: false,
+      field: '',
+      title: '',
+      value: '',
+    });
+  };
+
+  const saveContactInfo = () => {
+    if (editModal.field && editModal.value.trim()) {
+      setContactInfo(prev => ({
+        ...prev,
+        [editModal.field]: editModal.value.trim(),
+      }));
+      closeEditModal();
+      Alert.alert('Success', 'Contact information updated successfully!');
+    } else {
+      Alert.alert('Error', 'Please enter a valid value.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity style={styles.editButton}>
-          <Edit size={20} color="#2563EB" />
+          <Edit size={20} color="#8B5CF6" />
         </TouchableOpacity>
       </View>
 
@@ -64,7 +120,7 @@ export default function ProfileScreen() {
               <User size={32} color="#FFFFFF" />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{profileData.name}</Text>
+              <Text style={styles.profileName}>{contactInfo.name}</Text>
               <Text style={styles.memberSince}>Member since {profileData.memberSince}</Text>
             </View>
           </View>
@@ -78,10 +134,6 @@ export default function ProfileScreen() {
               <Text style={styles.statValue}>{profileData.accountsMonitored}</Text>
               <Text style={styles.statLabel}>Accounts</Text>
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>24/7</Text>
-              <Text style={styles.statLabel}>Monitoring</Text>
-            </View>
           </View>
         </View>
 
@@ -89,20 +141,38 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
 
-          <TouchableOpacity style={styles.contactItem}>
-            <Mail size={20} color="#6B7280" />
+          <TouchableOpacity 
+            style={styles.contactItem}
+            onPress={() => openEditModal('name', 'Edit Name', contactInfo.name)}
+          >
+            <User size={20} color="#6B7280" />
             <View style={styles.contactInfo}>
-              <Text style={styles.contactLabel}>Email</Text>
-              <Text style={styles.contactValue}>{profileData.email}</Text>
+              <Text style={styles.contactLabel}>Full Name</Text>
+              <Text style={styles.contactValue}>{contactInfo.name}</Text>
             </View>
             <ChevronRight size={16} color="#9CA3AF" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.contactItem}>
+          <TouchableOpacity 
+            style={styles.contactItem}
+            onPress={() => openEditModal('email', 'Edit Email', contactInfo.email)}
+          >
+            <Mail size={20} color="#6B7280" />
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactLabel}>Email</Text>
+              <Text style={styles.contactValue}>{contactInfo.email}</Text>
+            </View>
+            <ChevronRight size={16} color="#9CA3AF" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.contactItem}
+            onPress={() => openEditModal('phone', 'Edit Phone', contactInfo.phone)}
+          >
             <Smartphone size={20} color="#6B7280" />
             <View style={styles.contactInfo}>
               <Text style={styles.contactLabel}>Phone</Text>
-              <Text style={styles.contactValue}>{profileData.phone}</Text>
+              <Text style={styles.contactValue}>{contactInfo.phone}</Text>
             </View>
             <ChevronRight size={16} color="#9CA3AF" />
           </TouchableOpacity>
@@ -111,7 +181,7 @@ export default function ProfileScreen() {
         {/* Notifications */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Bell size={20} color="#2563EB" />
+            <Bell size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Notifications</Text>
           </View>
 
@@ -120,8 +190,10 @@ export default function ProfileScreen() {
             <Switch
               value={notifications.alerts}
               onValueChange={(value) => handleNotificationToggle('alerts', value)}
-              trackColor={{ false: '#E5E7EB', true: '#DBEAFE' }}
-              thumbColor={notifications.alerts ? '#2563EB' : '#9CA3AF'}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
             />
           </View>
 
@@ -130,8 +202,10 @@ export default function ProfileScreen() {
             <Switch
               value={notifications.email}
               onValueChange={(value) => handleNotificationToggle('email', value)}
-              trackColor={{ false: '#E5E7EB', true: '#DBEAFE' }}
-              thumbColor={notifications.email ? '#2563EB' : '#9CA3AF'}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
             />
           </View>
 
@@ -140,8 +214,10 @@ export default function ProfileScreen() {
             <Switch
               value={notifications.push}
               onValueChange={(value) => handleNotificationToggle('push', value)}
-              trackColor={{ false: '#E5E7EB', true: '#DBEAFE' }}
-              thumbColor={notifications.push ? '#2563EB' : '#9CA3AF'}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
             />
           </View>
 
@@ -150,8 +226,10 @@ export default function ProfileScreen() {
             <Switch
               value={notifications.weekly}
               onValueChange={(value) => handleNotificationToggle('weekly', value)}
-              trackColor={{ false: '#E5E7EB', true: '#DBEAFE' }}
-              thumbColor={notifications.weekly ? '#2563EB' : '#9CA3AF'}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
             />
           </View>
         </View>
@@ -159,17 +237,31 @@ export default function ProfileScreen() {
         {/* Security & Privacy */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Shield size={20} color="#2563EB" />
+            <Shield size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Security & Privacy</Text>
+          </View>
+
+          <View style={styles.settingItem}>
+            <Text style={styles.settingLabel}>PIN Protection</Text>
+            <Switch
+              value={security.pin}
+              onValueChange={(value) => handleSecurityToggle('pin', value)}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
+            />
           </View>
 
           <View style={styles.settingItem}>
             <Text style={styles.settingLabel}>Biometric Login</Text>
             <Switch
-              value={settings.biometric}
-              onValueChange={(value) => handleSettingToggle('biometric', value)}
-              trackColor={{ false: '#E5E7EB', true: '#DBEAFE' }}
-              thumbColor={settings.biometric ? '#2563EB' : '#9CA3AF'}
+              value={security.biometric}
+              onValueChange={(value) => handleSecurityToggle('biometric', value)}
+              trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+              thumbColor='#FFFFFF'
+              ios_backgroundColor="#E5E7EB"
+              style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
             />
           </View>
 
@@ -192,7 +284,7 @@ export default function ProfileScreen() {
         {/* Account Management */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Settings size={20} color="#2563EB" />
+            <Settings size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Account</Text>
           </View>
 
@@ -246,6 +338,45 @@ export default function ProfileScreen() {
           <Text style={styles.footerText}>© 2024 Credit Bureau</Text>
         </View>
       </ScrollView>
+
+      {/* Edit Contact Information Modal */}
+      <Modal
+        visible={editModal.visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closeEditModal}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
+              <X size={24} color="#111827" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>{editModal.title}</Text>
+            <TouchableOpacity onPress={saveContactInfo} style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.modalContent}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>
+                {editModal.field === 'name' ? 'Full Name' : 
+                 editModal.field === 'email' ? 'Email Address' : 'Phone Number'}
+              </Text>
+              <TextInput
+                style={styles.input}
+                value={editModal.value}
+                onChangeText={(text) => setEditModal(prev => ({ ...prev, value: text }))}
+                placeholder={`Enter your ${editModal.field}`}
+                keyboardType={editModal.field === 'email' ? 'email-address' : 
+                             editModal.field === 'phone' ? 'phone-pad' : 'default'}
+                autoCapitalize={editModal.field === 'email' ? 'none' : 'words'}
+                autoFocus
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -297,7 +428,7 @@ const styles = StyleSheet.create({
   avatarContainer: {
     width: 60,
     height: 60,
-    backgroundColor: '#2563EB',
+    backgroundColor: '#8B5CF6',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -329,7 +460,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#2563EB',
+    color: '#8B5CF6',
     marginBottom: 4,
   },
   statLabel: {
@@ -425,7 +556,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   planBadge: {
-    backgroundColor: '#059669',
+    backgroundColor: '#8B5CF6',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -470,7 +601,7 @@ const styles = StyleSheet.create({
   marketingButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2563EB',
+    color: '#8B5CF6',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -498,5 +629,63 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
     marginBottom: 4,
+  },
+  // Modal Styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  saveButton: {
+    backgroundColor: '#8B5CF6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modalContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: '#FFFFFF',
+    color: '#111827',
   },
 });

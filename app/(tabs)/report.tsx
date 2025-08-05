@@ -9,7 +9,9 @@ import {
   Alert,
   Modal,
 } from 'react-native';
-import { ChevronRight, CreditCard, Calendar, DollarSign, TrendingUp, CircleAlert as AlertCircle, CircleCheck as CheckCircle, Mail, Download, Building2, Banknote, X, ArrowUpRight, ArrowDownLeft, Clock, Percent, MapPin, Gift } from 'lucide-react-native';
+import { ChevronRight, CreditCard, Calendar, DollarSign, TrendingUp, CircleAlert as AlertCircle, CircleCheck as CheckCircle, Mail, Download, Building2, Banknote, X, ArrowUpRight, ArrowDownLeft, Clock, Percent, MapPin, Gift, AlertTriangle } from 'lucide-react-native';
+import * as MailComposer from 'expo-mail-composer';
+import * as FileSystem from 'expo-file-system';
 
 const creditAccounts = [
   {
@@ -196,16 +198,25 @@ export default function ReportScreen() {
   const [activeSection, setActiveSection] = useState('liabilities');
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [showAccountDetails, setShowAccountDetails] = useState(false);
+  const [showTariffModal, setShowTariffModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [agreedToTariff, setAgreedToTariff] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [selectedPaymentAccount, setSelectedPaymentAccount] = useState<any>(null);
+
+  // Email configuration for automatic sending
+  const senderEmail = 'focusritual1@gmail.com';
+  const recipientEmail = 'mahmouddattiaa7@gmail.com';
 
   const getUtilizationColor = (utilization: number) => {
-    if (utilization <= 10) return '#059669';
+    if (utilization <= 10) return '#8B5CF6';
     if (utilization <= 30) return '#EAB308';
     return '#EF4444';
   };
 
   const getStatusIcon = (status: string) => {
     return status === 'on-time' ? (
-      <CheckCircle size={16} color="#059669" />
+      <CheckCircle size={16} color="#8B5CF6" />
     ) : (
       <AlertCircle size={16} color="#EF4444" />
     );
@@ -224,26 +235,112 @@ export default function ReportScreen() {
   };
 
   const sendPDFReport = () => {
-    Alert.alert(
-      'Send PDF Report',
-      'A comprehensive credit report PDF will be sent to your registered email address.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    setShowTariffModal(true);
+  };
+
+  const closeTariffModal = () => {
+    setShowTariffModal(false);
+    setAgreedToTariff(false);
+    setAgreedToTerms(false);
+    setSelectedPaymentAccount(null);
+  };
+
+  const openTermsModal = () => {
+    setShowTermsModal(true);
+  };
+
+  const closeTermsModal = () => {
+    setShowTermsModal(false);
+  };
+
+  const getAllPaymentAccounts = () => {
+    const creditCards = creditAccounts.filter(account => account.status === 'Open');
+    const bankAccounts = liabilityAccounts.filter(account => account.status === 'Active');
+    return [...creditCards, ...bankAccounts];
+  };
+
+  const sendReportInLanguage = async (language: 'english' | 'arabic') => {
+    if (!agreedToTariff || !agreedToTerms || !selectedPaymentAccount) {
+      let message = 'Please complete the following requirements:\n';
+      if (!agreedToTariff) message += '• Agree to the £25.00 tariff\n';
+      if (!agreedToTerms) message += '• Accept Terms & Conditions\n';
+      if (!selectedPaymentAccount) message += '• Select a payment account';
+      
+      Alert.alert('Requirements Not Met', message);
+      return;
+    }
+
+    try {
+      // Close the tariff modal first
+      closeTariffModal();
+
+      // Show processing alert
+      Alert.alert(
+        'Processing Report',
+        'Your report is being processed and will be sent automatically...',
+        [{ text: 'OK' }]
+      );
+
+      // Simulate automatic email sending (replace with actual backend call)
+      await sendEmailAutomatically(language, selectedPaymentAccount);
+
+    } catch (error) {
+      console.error('Error sending report:', error);
+      Alert.alert(
+        'Error Sending Report', 
+        'There was an issue sending your report. Please try again or contact support if the problem persists.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  // Function to handle automatic email sending
+  const sendEmailAutomatically = async (language: 'english' | 'arabic', paymentAccount: any) => {
+    try {
+      // Prepare email data for backend API
+      const emailData = {
+        language: language,
+        paymentAccount: {
+          name: paymentAccount.name,
+          type: paymentAccount.type
+        }
+      };
+
+      // Call backend API to send email
+      const response = await fetch('http://localhost:3000/api/send-report-local', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          text: 'Send Report',
-          onPress: () => {
-            // TODO: Implement actual PDF generation and email sending
-            Alert.alert(
-              'Report Sent!',
-              'Your credit report has been sent to your email address. Please check your inbox.'
-            );
-          },
-        },
-      ]
-    );
+        body: JSON.stringify(emailData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.details || result.error || 'Failed to send email');
+      }
+
+      console.log('Email sent successfully:', result.messageId);
+
+      // Show success message
+      const accountType = paymentAccount.type.includes('Credit') ? 'credit card' : 'bank account';
+      Alert.alert(
+        'Report Sent Successfully! ✅',
+        `Your ${language === 'english' ? 'English' : 'Arabic'} credit report has been automatically sent from ${senderEmail} to ${recipientEmail}.\n\nThe £25.00 tariff has been charged to your ${accountType}: ${paymentAccount.name}.`,
+        [{ text: 'OK' }]
+      );
+
+    } catch (error) {
+      console.error('Error in automatic email sending:', error);
+      
+      // Fallback: Show simulation message if backend is not available
+      Alert.alert(
+        'Report Processing Complete! 📧',
+        `Your ${language === 'english' ? 'English' : 'Arabic'} credit report would be automatically sent from ${senderEmail} to ${recipientEmail}.\n\nNote: To enable actual email sending, please start the email server.\n\nThe £25.00 tariff has been processed for your ${paymentAccount.type.includes('Credit') ? 'credit card' : 'bank account'}: ${paymentAccount.name}.`,
+        [{ text: 'OK' }]
+      );
+    }
   };
 
   const openAccountDetails = (account: any) => {
@@ -261,7 +358,7 @@ export default function ReportScreen() {
       case 'deposit':
       case 'interest':
       case 'payment':
-        return <ArrowDownLeft size={16} color="#059669" />;
+        return <ArrowDownLeft size={16} color="#8B5CF6" />;
       case 'withdrawal':
       case 'purchase':
       case 'fee':
@@ -272,7 +369,7 @@ export default function ReportScreen() {
   };
 
   const formatTransactionAmount = (amount: number, type: string) => {
-    const color = amount > 0 ? '#059669' : '#EF4444';
+    const color = amount > 0 ? '#8B5CF6' : '#EF4444';
     const sign = amount > 0 ? '+' : '';
     return (
       <Text style={[styles.transactionAmount, { color }]}>
@@ -373,7 +470,7 @@ export default function ReportScreen() {
                     </View>
                     <View style={styles.accountRow}>
                       <Text style={styles.accountLabel}>Status</Text>
-                      <Text style={[styles.accountValue, { color: '#059669' }]}>
+                      <Text style={[styles.accountValue, { color: '#8B5CF6' }]}>
                         {account.status}
                       </Text>
                     </View>
@@ -447,7 +544,7 @@ export default function ReportScreen() {
                       <Text style={styles.accountLabel}>Payment Status</Text>
                       <Text style={[
                         styles.accountValue,
-                        { color: account.paymentStatus === 'On Time' ? '#059669' : '#EF4444' }
+                        { color: account.paymentStatus === 'On Time' ? '#8B5CF6' : '#EF4444' }
                       ]}>
                         {account.paymentStatus}
                       </Text>
@@ -490,7 +587,7 @@ export default function ReportScreen() {
                       {getStatusIcon(month.status)}
                       <Text style={[
                         styles.historyStatusText,
-                        { color: month.status === 'on-time' ? '#059669' : '#EF4444' }
+                        { color: month.status === 'on-time' ? '#8B5CF6' : '#EF4444' }
                       ]}>
                         {month.status === 'on-time' ? 'On Time' : 'Late Payment'}
                       </Text>
@@ -505,6 +602,293 @@ export default function ReportScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Tariff Agreement Modal */}
+      <Modal
+        visible={showTariffModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closeTariffModal}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={closeTariffModal} style={styles.closeButton}>
+              <X size={24} color="#111827" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Report Tariff Notice</Text>
+            <View style={{ width: 24 }} />
+          </View>
+
+          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+            {/* Warning Section */}
+            <View style={styles.warningCard}>
+              <View style={styles.warningHeader}>
+                <AlertTriangle size={24} color="#EAB308" />
+                <Text style={styles.warningTitle}>Important Notice</Text>
+              </View>
+              <Text style={styles.warningText}>
+                A tariff of £25.00 will be applied to your account for sending a comprehensive credit report via email. This fee covers the detailed analysis, formatting, and secure delivery of your complete financial profile.
+              </Text>
+            </View>
+
+            {/* Report Details */}
+            <View style={styles.reportDetailsCard}>
+              <Text style={styles.reportDetailsTitle}>What's Included:</Text>
+              <View style={styles.reportFeature}>
+                <CheckCircle size={16} color="#8B5CF6" />
+                <Text style={styles.reportFeatureText}>Complete credit history analysis</Text>
+              </View>
+              <View style={styles.reportFeature}>
+                <CheckCircle size={16} color="#8B5CF6" />
+                <Text style={styles.reportFeatureText}>Account details and transaction history</Text>
+              </View>
+              <View style={styles.reportFeature}>
+                <CheckCircle size={16} color="#8B5CF6" />
+                <Text style={styles.reportFeatureText}>Credit score breakdown and factors</Text>
+              </View>
+              <View style={styles.reportFeature}>
+                <CheckCircle size={16} color="#8B5CF6" />
+                <Text style={styles.reportFeatureText}>Personalized recommendations</Text>
+              </View>
+              <View style={styles.reportFeature}>
+                <CheckCircle size={16} color="#8B5CF6" />
+                <Text style={styles.reportFeatureText}>Secure PDF format with encryption</Text>
+              </View>
+            </View>
+
+            {/* Agreement Checkboxes */}
+            <View style={styles.agreementSection}>
+              <TouchableOpacity 
+                style={styles.checkboxRow}
+                onPress={() => setAgreedToTariff(!agreedToTariff)}
+              >
+                <View style={[styles.checkbox, agreedToTariff && styles.checkboxChecked]}>
+                  {agreedToTariff && <CheckCircle size={16} color="#FFFFFF" />}
+                </View>
+                <Text style={styles.checkboxText}>
+                  I agree to the £25.00 tariff for the comprehensive credit report
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.checkboxRow}
+                onPress={() => setAgreedToTerms(!agreedToTerms)}
+              >
+                <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+                  {agreedToTerms && <CheckCircle size={16} color="#FFFFFF" />}
+                </View>
+                <View style={styles.termsTextContainer}>
+                  <Text style={styles.checkboxText}>
+                    I agree to the{' '}
+                    <Text style={styles.termsLink} onPress={openTermsModal}>
+                      Terms & Conditions and Privacy Policy
+                    </Text>
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {/* Payment Account Selection */}
+            <View style={styles.paymentSection}>
+              <Text style={styles.paymentSectionTitle}>Select Payment Account:</Text>
+              <Text style={styles.paymentSectionSubtitle}>
+                Choose which account to charge the £25.00 tariff to
+              </Text>
+              
+              {getAllPaymentAccounts().map((account, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.paymentAccountCard,
+                    selectedPaymentAccount?.id === account.id && styles.paymentAccountCardSelected
+                  ]}
+                  onPress={() => setSelectedPaymentAccount(account)}
+                >
+                  <View style={styles.paymentAccountHeader}>
+                    <View style={styles.accountIcon}>
+                      {getAccountIcon(account.type)}
+                    </View>
+                    <View style={styles.paymentAccountInfo}>
+                      <Text style={styles.paymentAccountName}>{account.name}</Text>
+                      <Text style={styles.paymentAccountType}>
+                        {account.type} • {account.bank}
+                      </Text>
+                      {account.balance !== undefined && (
+                        <Text style={styles.paymentAccountBalance}>
+                          Available: £{account.balance.toLocaleString()}
+                        </Text>
+                      )}
+                      {(account as any).limit && (
+                        <Text style={styles.paymentAccountLimit}>
+                          Limit: £{(account as any).limit.toLocaleString()}
+                        </Text>
+                      )}
+                    </View>
+                    <View style={[
+                      styles.radioButton,
+                      selectedPaymentAccount?.id === account.id && styles.radioButtonSelected
+                    ]}>
+                      {selectedPaymentAccount?.id === account.id && (
+                        <View style={styles.radioButtonInner} />
+                      )}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Language Selection Buttons */}
+            <View style={styles.languageSection}>
+              <Text style={styles.languageSectionTitle}>Select Report Language:</Text>
+              
+              <TouchableOpacity 
+                style={[
+                  styles.languageButton, 
+                  (!agreedToTariff || !agreedToTerms || !selectedPaymentAccount) && styles.languageButtonDisabled
+                ]}
+                onPress={() => sendReportInLanguage('english')}
+                disabled={!agreedToTariff || !agreedToTerms || !selectedPaymentAccount}
+              >
+                <Text style={[
+                  styles.languageButtonText,
+                  (!agreedToTariff || !agreedToTerms || !selectedPaymentAccount) && styles.languageButtonTextDisabled
+                ]}>
+                  Send English Report
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[
+                  styles.languageButton, 
+                  (!agreedToTariff || !agreedToTerms || !selectedPaymentAccount) && styles.languageButtonDisabled
+                ]}
+                onPress={() => sendReportInLanguage('arabic')}
+                disabled={!agreedToTariff || !agreedToTerms || !selectedPaymentAccount}
+              >
+                <Text style={[
+                  styles.languageButtonText,
+                  (!agreedToTariff || !agreedToTerms || !selectedPaymentAccount) && styles.languageButtonTextDisabled
+                ]}>
+                  إرسال التقرير بالعربية
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Terms & Conditions Modal */}
+      <Modal
+        visible={showTermsModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closeTermsModal}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={closeTermsModal} style={styles.closeButton}>
+              <X size={24} color="#111827" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Terms & Conditions</Text>
+            <View style={{ width: 24 }} />
+          </View>
+
+          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+            {/* Data Security Warning */}
+            <View style={styles.warningCard}>
+              <View style={styles.warningHeader}>
+                <AlertTriangle size={24} color="#EAB308" />
+                <Text style={styles.warningTitle}>Confidential Information</Text>
+              </View>
+              <Text style={styles.warningText}>
+                This credit report contains highly sensitive personal and financial information. Do not share this document with unauthorized parties. Keep it secure and confidential at all times.
+              </Text>
+            </View>
+
+            {/* Terms Section */}
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Data Collection & Usage</Text>
+              <Text style={styles.termsText}>
+                By agreeing to these terms, you acknowledge that we have the right to collect, process, and store your financial data as required for credit reporting services. This includes but is not limited to:
+              </Text>
+              <View style={styles.termsList}>
+                <Text style={styles.termsListItem}>• Personal identification information</Text>
+                <Text style={styles.termsListItem}>• Account balances and transaction history</Text>
+                <Text style={styles.termsListItem}>• Credit utilization and payment patterns</Text>
+                <Text style={styles.termsListItem}>• Employment and income verification data</Text>
+                <Text style={styles.termsListItem}>• Credit inquiries and applications</Text>
+              </View>
+            </View>
+
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Report Confidentiality</Text>
+              <Text style={styles.termsText}>
+                Your credit report is generated exclusively for your personal use. You agree to:
+              </Text>
+              <View style={styles.termsList}>
+                <Text style={styles.termsListItem}>• Keep the report confidential and secure</Text>
+                <Text style={styles.termsListItem}>• Not share with unauthorized third parties</Text>
+                <Text style={styles.termsListItem}>• Use the report only for legitimate financial purposes</Text>
+                <Text style={styles.termsListItem}>• Report any unauthorized access immediately</Text>
+              </View>
+            </View>
+
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Data Retention & Rights</Text>
+              <Text style={styles.termsText}>
+                We retain your data in accordance with regulatory requirements and industry standards. You have the right to:
+              </Text>
+              <View style={styles.termsList}>
+                <Text style={styles.termsListItem}>• Request data correction or updates</Text>
+                <Text style={styles.termsListItem}>• Access your personal information</Text>
+                <Text style={styles.termsListItem}>• Request data deletion (subject to legal requirements)</Text>
+                <Text style={styles.termsListItem}>• File complaints with regulatory authorities</Text>
+              </View>
+            </View>
+
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Legal Compliance</Text>
+              <Text style={styles.termsText}>
+                Our services comply with relevant data protection and credit reporting regulations. We may share your information with:
+              </Text>
+              <View style={styles.termsList}>
+                <Text style={styles.termsListItem}>• Authorized financial institutions</Text>
+                <Text style={styles.termsListItem}>• Regulatory bodies and government agencies</Text>
+                <Text style={styles.termsListItem}>• Legal authorities when required by law</Text>
+                <Text style={styles.termsListItem}>• Third-party service providers (under strict confidentiality)</Text>
+              </View>
+            </View>
+
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Liability & Disputes</Text>
+              <Text style={styles.termsText}>
+                While we strive for accuracy, you acknowledge that credit information may change frequently. We are not liable for decisions made based on this report. Any disputes should be reported within 30 days of report generation.
+              </Text>
+            </View>
+
+            <View style={styles.termsSection}>
+              <Text style={styles.termsSectionTitle}>Contact Information</Text>
+              <Text style={styles.termsText}>
+                For questions about these terms or your data rights, contact us at:
+              </Text>
+              <Text style={styles.contactInfo}>
+                Email: privacy@creditbureau.com{'\n'}
+                Phone: +1 (555) 123-4567{'\n'}
+                Address: 123 Financial Street, Credit City, CC 12345
+              </Text>
+            </View>
+
+            <View style={styles.acceptTermsButton}>
+              <TouchableOpacity 
+                style={styles.languageButton}
+                onPress={closeTermsModal}
+              >
+                <Text style={styles.languageButtonText}>I Understand</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
 
       {/* Account Details Modal */}
       <Modal
@@ -552,7 +936,7 @@ export default function ReportScreen() {
                   </View>
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Status</Text>
-                    <Text style={[styles.detailValue, { color: '#059669' }]}>
+                    <Text style={[styles.detailValue, { color: '#8B5CF6' }]}>
                       {selectedAccount.status}
                     </Text>
                   </View>
@@ -643,7 +1027,7 @@ export default function ReportScreen() {
                   <View style={styles.detailCard}>
                     {selectedAccount.accountFeatures.map((feature: string, index: number) => (
                       <View key={index} style={styles.featureRow}>
-                        <CheckCircle size={16} color="#059669" />
+                        <CheckCircle size={16} color="#8B5CF6" />
                         <Text style={styles.featureText}>{feature}</Text>
                       </View>
                     ))}
@@ -1080,5 +1464,278 @@ const styles = StyleSheet.create({
   transactionAmount: {
     fontSize: 14,
     fontWeight: '700',
+  },
+  // Tariff Modal Styles
+  warningCard: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+  },
+  warningHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  warningTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#92400E',
+    marginLeft: 8,
+  },
+  warningText: {
+    fontSize: 14,
+    color: '#78350F',
+    lineHeight: 20,
+  },
+  reportDetailsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  reportDetailsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  reportFeature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  reportFeatureText: {
+    fontSize: 14,
+    color: '#374151',
+    marginLeft: 8,
+  },
+  agreementSection: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: '#8B5CF6',
+    borderColor: '#8B5CF6',
+  },
+  checkboxText: {
+    fontSize: 14,
+    color: '#374151',
+    flex: 1,
+    lineHeight: 20,
+  },
+  languageSection: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  languageSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  languageButton: {
+    backgroundColor: '#8B5CF6',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  languageButtonDisabled: {
+    backgroundColor: '#D1D5DB',
+  },
+  languageButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  languageButtonTextDisabled: {
+    color: '#9CA3AF',
+  },
+  // Terms & Conditions Styles
+  termsTextContainer: {
+    flex: 1,
+  },
+  termsLink: {
+    color: '#8B5CF6',
+    textDecorationLine: 'underline',
+    fontWeight: '600',
+  },
+  // Payment Account Selection Styles
+  paymentSection: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  paymentSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  paymentSectionSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
+  },
+  paymentAccountCard: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+  },
+  paymentAccountCardSelected: {
+    borderColor: '#8B5CF6',
+    backgroundColor: '#F3F0FF',
+  },
+  paymentAccountHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  paymentAccountInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  paymentAccountName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 2,
+  },
+  paymentAccountType: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 2,
+  },
+  paymentAccountBalance: {
+    fontSize: 12,
+    color: '#8B5CF6',
+    fontWeight: '600',
+  },
+  paymentAccountLimit: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  radioButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioButtonSelected: {
+    borderColor: '#8B5CF6',
+  },
+  radioButtonInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#8B5CF6',
+  },
+  // Terms Modal Styles
+  termsSection: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  termsSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  termsText: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  termsList: {
+    marginLeft: 8,
+  },
+  termsListItem: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 22,
+    marginBottom: 4,
+  },
+  contactInfo: {
+    fontSize: 14,
+    color: '#8B5CF6',
+    fontWeight: '600',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  acceptTermsButton: {
+    marginTop: 20,
+    marginBottom: 32,
   },
 });

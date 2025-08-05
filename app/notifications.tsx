@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { X, TriangleAlert as AlertTriangle, CreditCard, CheckCircle } from 'lucide-react-native';
 
@@ -60,24 +60,15 @@ export default function NotificationsScreen() {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ 
-                            fontSize: 20, 
-                            fontWeight: '800',
-                            color: '#2563EB',
-                            letterSpacing: -0.5,
-                        }}>
-                            i
-                        </Text>
-                        <Text style={{ 
-                            fontSize: 20, 
-                            fontWeight: '800',
-                            color: '#FFFFFF',
-                            letterSpacing: -0.5,
-                        }}>
-                            score
-                        </Text>
-                    </View>
+                    <Image 
+                        source={require('../assets/images/logo.jpg')} 
+                        style={{ 
+                            width: 70, 
+                            height: 22, 
+                            resizeMode: 'contain',
+                            tintColor: '#FFFFFF' 
+                        }} 
+                    />
                 </View>
                 <Text style={styles.headerTitle}>Notifications</Text>
                 <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
@@ -115,12 +106,6 @@ const styles = StyleSheet.create({
     },
     headerLeft: {
         minWidth: 60,
-    },
-    brandText: {
-        fontSize: 20,
-        fontWeight: '800',
-        color: '#8B5CF6',
-        letterSpacing: -0.5,
     },
     headerLogo: {
         width: 80,

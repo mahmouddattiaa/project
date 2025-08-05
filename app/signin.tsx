@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Dimensions,
+    Image,
 } from 'react-native';
 import { ChevronRight, Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -103,10 +104,9 @@ export default function SignInScreen() {
             overflow: 'hidden' as const,
         },
         logoImage: {
-            width: isMobile ? 140 : 180,
-            height: isMobile ? 50 : 65,
-            maxWidth: '90%',
-            maxHeight: '90%',
+            width: isMobile ? 120 : 150,
+            height: isMobile ? 35 : 45,
+            resizeMode: 'contain',
         },
         welcomeText: {
             fontSize: isMobile ? 24 : 28,
@@ -335,24 +335,10 @@ export default function SignInScreen() {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.logoHeader}>
                 <View style={styles.logoContainer}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ 
-                            fontSize: 32, 
-                            fontWeight: '800',
-                            color: '#2563EB',
-                            letterSpacing: -0.5,
-                        }}>
-                            i
-                        </Text>
-                        <Text style={{ 
-                            fontSize: 32, 
-                            fontWeight: '800',
-                            color: '#8B5CF6',
-                            letterSpacing: -0.5,
-                        }}>
-                            score
-                        </Text>
-                    </View>
+                    <Image 
+                        source={require('../assets/images/logo.jpg')} 
+                        style={styles.logoImage} 
+                    />
                 </View>
                 <Text style={styles.welcomeText}>Welcome Back</Text>
                 <Text style={styles.subtitleText}>Sign in to continue your credit journey</Text>

@@ -6,6 +6,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Dimensions,
+    Image,
 } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -37,22 +38,6 @@ export default function TermsScreen() {
             flex: 1,
             alignItems: 'center',
         },
-        brandContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        brandText: {
-            fontSize: 20,
-            fontWeight: '800',
-            color: '#8B5CF6',
-            letterSpacing: -0.5,
-        },
-        brandTextBlue: {
-            fontSize: 20,
-            fontWeight: '800',
-            color: '#2563EB',
-            letterSpacing: -0.5,
-        },
         headerRight: {
             width: 56,
         },
@@ -60,7 +45,6 @@ export default function TermsScreen() {
             width: 80,
             height: 24,
             resizeMode: 'contain',
-            marginRight: 12,
         },
         headerTitle: {
             fontSize: isMobile ? 18 : 20,
@@ -126,10 +110,10 @@ export default function TermsScreen() {
                     <ChevronLeft color="#1F2937" size={24} />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
-                    <View style={styles.brandContainer}>
-                        <Text style={styles.brandTextBlue}>i</Text>
-                        <Text style={styles.brandText}>score</Text>
-                    </View>
+                    <Image 
+                        source={require('../assets/images/logo.jpg')} 
+                        style={styles.headerLogo} 
+                    />
                 </View>
                 <View style={styles.headerRight} />
             </View>

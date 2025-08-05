@@ -126,7 +126,7 @@ export default function InsightsScreen() {
         {/* Score Goal Card */}
         <View style={styles.goalCard}>
           <View style={styles.goalHeader}>
-            <Target size={24} color="#2563EB" />
+            <Target size={24} color="#8B5CF6" />
             <Text style={styles.goalTitle}>Your Credit Goal</Text>
           </View>
           <View style={styles.goalContent}>
@@ -158,7 +158,7 @@ export default function InsightsScreen() {
         {/* Recommendations */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Lightbulb size={20} color="#2563EB" />
+            <Lightbulb size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Personalized Recommendations</Text>
           </View>
 
@@ -168,7 +168,7 @@ export default function InsightsScreen() {
               <TouchableOpacity key={index} style={styles.recommendationCard}>
                 <View style={styles.recommendationHeader}>
                   <View style={styles.recommendationIcon}>
-                    <IconComponent size={20} color="#2563EB" />
+                    <IconComponent size={20} color="#8B5CF6" />
                   </View>
                   <View style={styles.recommendationInfo}>
                     <Text style={styles.recommendationTitle}>{rec.title}</Text>
@@ -195,7 +195,7 @@ export default function InsightsScreen() {
         {/* Score Simulator */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <TrendingUp size={20} color="#2563EB" />
+            <TrendingUp size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Score Simulator</Text>
           </View>
 
@@ -227,7 +227,7 @@ export default function InsightsScreen() {
         {/* Educational Content */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <BookOpen size={20} color="#2563EB" />
+            <BookOpen size={20} color="#8B5CF6" />
             <Text style={styles.sectionTitle}>Credit Education</Text>
           </View>
 
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   scoreValue: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#2563EB',
+    color: '#8B5CF6',
   },
   goalArrow: {
     marginHorizontal: 16,
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   goalButton: {
-    backgroundColor: '#2563EB',
+    backgroundColor: '#8B5CF6',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   contentCategory: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#2563EB',
+    color: '#8B5CF6',
     marginBottom: 4,
   },
   contentTitle: {
