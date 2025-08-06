@@ -60,15 +60,12 @@ export default function NotificationsScreen() {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                    <Image 
-                        source={require('../assets/images/logo.jpg')} 
-                        style={{ 
-                            width: 70, 
-                            height: 22, 
-                            resizeMode: 'contain',
-                            tintColor: '#FFFFFF' 
-                        }} 
-                    />
+                    <View style={styles.logoContainer}>
+                        <Image 
+                            source={require('../assets/images/logo.jpg')} 
+                            style={styles.headerLogo} 
+                        />
+                    </View>
                 </View>
                 <Text style={styles.headerTitle}>Notifications</Text>
                 <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
@@ -107,9 +104,16 @@ const styles = StyleSheet.create({
     headerLeft: {
         minWidth: 60,
     },
+    logoContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 8,
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     headerLogo: {
-        width: 80,
-        height: 24,
+        width: 60,
+        height: 20,
         resizeMode: 'contain',
     },
     headerTitle: {

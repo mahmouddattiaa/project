@@ -60,8 +60,24 @@ export default function ProfileScreen() {
     biometric: true,
   });
 
+  const [tariffModal, setTariffModal] = useState({
+    visible: false,
+    selectedAccount: '',
+  });
+
+  const [accounts] = useState([
+    { id: '1', name: 'Primary Checking', number: '**** 1234', balance: 'EGP 75,000.00' },
+    { id: '2', name: 'Savings Account', number: '**** 5678', balance: 'EGP 275,000.00' },
+    { id: '3', name: 'Credit Card', number: '**** 9012', balance: 'EGP 37,000.00' },
+  ]);
+
   const handleNotificationToggle = (type: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [type]: value }));
+    if (type === 'weekly' && value) {
+      // Show tariff modal when trying to enable weekly reports
+      setTariffModal({ visible: true, selectedAccount: '' });
+    } else {
+      setNotifications(prev => ({ ...prev, [type]: value }));
+    }
   };
 
   const handleSettingToggle = (type: string, value: boolean) => {
@@ -70,6 +86,22 @@ export default function ProfileScreen() {
 
   const handleSecurityToggle = (type: string, value: boolean) => {
     setSecurity(prev => ({ ...prev, [type]: value }));
+  };
+
+  const handleTariffAccept = () => {
+    if (!tariffModal.selectedAccount) {
+      Alert.alert('Error', 'Please select an account to be charged.');
+      return;
+    }
+    
+    // Enable weekly reports
+    setNotifications(prev => ({ ...prev, weekly: true }));
+    setTariffModal({ visible: false, selectedAccount: '' });
+    Alert.alert('Success', 'Weekly reports have been enabled. You will be charged EGP 95.00 weekly from your selected account.');
+  };
+
+  const handleTariffCancel = () => {
+    setTariffModal({ visible: false, selectedAccount: '' });
   };
 
   const openEditModal = (field: string, title: string, currentValue: string) => {
@@ -373,6 +405,78 @@ export default function ProfileScreen() {
                 autoCapitalize={editModal.field === 'email' ? 'none' : 'words'}
                 autoFocus
               />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Weekly Reports Tariff Modal */}
+      <Modal
+        visible={tariffModal.visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleTariffCancel}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={handleTariffCancel} style={styles.closeButton}>
+              <X size={24} color="#6B7280" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Weekly Reports Subscription</Text>
+            <View style={styles.closeButton} />
+          </View>
+          <View style={styles.modalContent}>
+            <View style={styles.tariffCard}>
+              <Text style={styles.tariffTitle}>Weekly Credit Reports</Text>
+              <Text style={styles.tariffDescription}>
+                Get your detailed credit report delivered to your email every week. Stay informed about changes to your credit profile.
+              </Text>
+              <View style={styles.tariffPricing}>
+                <Text style={styles.tariffPrice}>EGP 95</Text>
+                <Text style={styles.tariffPeriod}>/week</Text>
+              </View>
+              <View style={styles.tariffFeatures}>
+                <Text style={styles.featureItem}>• Weekly detailed credit reports</Text>
+                <Text style={styles.featureItem}>• Email delivery in English & Arabic</Text>
+                <Text style={styles.featureItem}>• Cancel anytime</Text>
+                <Text style={styles.featureItem}>• First report delivered within 24 hours</Text>
+              </View>
+            </View>
+
+            <View style={styles.accountSelection}>
+              <Text style={styles.selectionTitle}>Choose Billing Account</Text>
+              <Text style={styles.selectionSubtitle}>Select which account to charge weekly</Text>
+              
+              {accounts.map((account) => (
+                <TouchableOpacity
+                  key={account.id}
+                  style={[
+                    styles.accountOption,
+                    tariffModal.selectedAccount === account.id && styles.accountSelected
+                  ]}
+                  onPress={() => setTariffModal(prev => ({ ...prev, selectedAccount: account.id }))}
+                >
+                  <View style={styles.accountInfo}>
+                    <CreditCard size={20} color="#8B5CF6" />
+                    <View style={styles.accountDetails}>
+                      <Text style={styles.accountName}>{account.name}</Text>
+                      <Text style={styles.accountNumber}>{account.number}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.accountBalance}>
+                    <Text style={styles.balanceText}>{account.balance}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.tariffActions}>
+              <TouchableOpacity style={styles.cancelButton} onPress={handleTariffCancel}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.acceptButton} onPress={handleTariffAccept}>
+                <Text style={styles.acceptButtonText}>Accept & Subscribe</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </SafeAreaView>
@@ -687,5 +791,137 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#FFFFFF',
     color: '#111827',
+  },
+  // Tariff Modal Styles
+  tariffCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  tariffTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  tariffDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  tariffPricing: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 16,
+  },
+  tariffPrice: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#8B5CF6',
+  },
+  tariffPeriod: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginLeft: 4,
+  },
+  tariffFeatures: {
+    marginTop: 8,
+  },
+  featureItem: {
+    fontSize: 14,
+    color: '#374151',
+    marginBottom: 6,
+    lineHeight: 18,
+  },
+  accountSelection: {
+    marginBottom: 32,
+  },
+  selectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  selectionSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
+  },
+  accountOption: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  accountSelected: {
+    borderColor: '#8B5CF6',
+    backgroundColor: '#F3E8FF',
+  },
+  accountInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  accountDetails: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  accountName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 2,
+  },
+  accountNumber: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  accountBalance: {
+    alignItems: 'flex-end',
+  },
+  balanceText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#059669',
+  },
+  tariffActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  acceptButton: {
+    flex: 2,
+    backgroundColor: '#8B5CF6',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  acceptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
