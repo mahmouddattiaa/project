@@ -20,11 +20,12 @@ export default function TabLayout() {
         headerTitle: () => (
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Image 
-              source={require('../../assets/images/logo.jpg')} 
+              source={require('../../assets/images/Dev-logo.svg')} 
               style={{ 
-                width: 120, 
-                height: 40, 
-                resizeMode: 'contain' 
+                width: 400, 
+                height: 205, 
+                resizeMode: 'stretch',
+                backgroundColor: 'transparent'
               }} 
             />
           </View>

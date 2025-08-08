@@ -1,5 +1,5 @@
 @echo off
-echo Setting up iScore Email Server...
+echo Setting up Kepler Email Server...
 echo.
 
 cd email-server

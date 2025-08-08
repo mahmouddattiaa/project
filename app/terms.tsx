@@ -42,9 +42,10 @@ export default function TermsScreen() {
             width: 56,
         },
         headerLogo: {
-            width: 80,
-            height: 24,
-            resizeMode: 'contain',
+            width: 110,
+            height: 38,
+            resizeMode: 'stretch',
+            backgroundColor: 'transparent',
         },
         headerTitle: {
             fontSize: isMobile ? 18 : 20,
@@ -111,7 +112,7 @@ export default function TermsScreen() {
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
                     <Image 
-                        source={require('../assets/images/logo.jpg')} 
+                        source={require('../assets/images/Dev-logo.svg')} 
                         style={styles.headerLogo} 
                     />
                 </View>
@@ -122,21 +123,21 @@ export default function TermsScreen() {
                 <Text style={styles.title}>Terms and Conditions</Text>
                 <Text style={styles.effectiveDate}>Effective Date: August 3, 2025</Text>
                 <Text style={styles.subtitle}>
-                    Welcome to <Text style={styles.companyName}>iscore</Text> Credit Score Application
+                    Welcome to <Text style={styles.companyName}>Kepler</Text> Credit Score Application
                 </Text>
 
                 <Text style={styles.paragraph}>
-                    By using the <Text style={styles.companyName}>iscore</Text> mobile application ("App"), you agree to be bound by these Terms and Conditions ("Terms"). Please read them carefully before using our services.
+                    By using the <Text style={styles.companyName}>Kepler</Text> mobile application ("App"), you agree to be bound by these Terms and Conditions ("Terms"). Please read them carefully before using our services.
                 </Text>
 
                 <Text style={styles.sectionTitle}>1. Acceptance of Terms</Text>
                 <Text style={styles.paragraph}>
-                    By accessing and using the <Text style={styles.companyName}>iscore</Text> App, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy.
+                    By accessing and using the <Text style={styles.companyName}>Kepler</Text> App, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy.
                 </Text>
 
                 <Text style={styles.sectionTitle}>2. Services Provided</Text>
                 <Text style={styles.paragraph}>
-                    <Text style={styles.companyName}>iscore</Text> provides credit scoring and financial assessment services including:
+                    <Text style={styles.companyName}>Kepler</Text> provides credit scoring and financial assessment services including:
                 </Text>
                 <Text style={styles.listItem}>• Credit score calculation and monitoring</Text>
                 <Text style={styles.listItem}>• Financial health analysis</Text>
@@ -167,7 +168,7 @@ export default function TermsScreen() {
 
                 <Text style={styles.sectionTitle}>6. Credit Score Accuracy</Text>
                 <Text style={styles.paragraph}>
-                    While we strive to provide accurate credit scores, <Text style={styles.companyName}>iscore</Text> cannot guarantee 100% accuracy. Credit scores are estimates based on available data and should be used for informational purposes only.
+                    While we strive to provide accurate credit scores, <Text style={styles.companyName}>Kepler</Text> cannot guarantee 100% accuracy. Credit scores are estimates based on available data and should be used for informational purposes only.
                 </Text>
 
                 <Text style={styles.sectionTitle}>7. User Responsibilities</Text>
@@ -190,7 +191,7 @@ export default function TermsScreen() {
 
                 <Text style={styles.sectionTitle}>9. Limitation of Liability</Text>
                 <Text style={styles.paragraph}>
-                    <Text style={styles.companyName}>iscore</Text> shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the App or reliance on credit score information.
+                    <Text style={styles.companyName}>Kepler</Text> shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the App or reliance on credit score information.
                 </Text>
 
                 <Text style={styles.sectionTitle}>10. Termination</Text>
@@ -214,7 +215,7 @@ export default function TermsScreen() {
                 </Text>
 
                 <Text style={styles.paragraph}>
-                    By clicking "I accept" or using the <Text style={styles.companyName}>iscore</Text> App, you acknowledge that you have read and agree to these Terms and Conditions.
+                    By clicking "I accept" or using the <Text style={styles.companyName}>Kepler</Text> App, you acknowledge that you have read and agree to these Terms and Conditions.
                 </Text>
             </ScrollView>
         </View>

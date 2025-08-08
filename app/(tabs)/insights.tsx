@@ -168,7 +168,7 @@ export default function InsightsScreen() {
               <TouchableOpacity key={index} style={styles.recommendationCard}>
                 <View style={styles.recommendationHeader}>
                   <View style={styles.recommendationIcon}>
-                    <IconComponent size={20} color="#8B5CF6" />
+                    <IconComponent size={40} color="#8B5CF6" />
                   </View>
                   <View style={styles.recommendationInfo}>
                     <Text style={styles.recommendationTitle}>{rec.title}</Text>

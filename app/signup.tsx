@@ -197,12 +197,13 @@ export default function SignUpScreen() {
             overflow: 'hidden' as const,
         },
         logoImage: {
-            width: isMobile ? 120 : 150,
-            height: isMobile ? 35 : 45,
-            resizeMode: 'contain',
+            width: isMobile ? 320 : 400,
+            height: isMobile ? 120 : 150,
+            resizeMode: 'stretch',
+            backgroundColor: 'transparent',
         },
         welcomeText: {
-            fontSize: isMobile ? 24 : 28,
+            fontSize: isMobile ? 28 : 32,
             fontWeight: '700' as const,
             color: '#1A202C',
             textAlign: 'center' as const,
@@ -210,14 +211,14 @@ export default function SignUpScreen() {
             letterSpacing: -0.5,
         },
         subtitleText: {
-            fontSize: isMobile ? 16 : 18,
+            fontSize: isMobile ? 18 : 20,
             color: '#718096',
             textAlign: 'center' as const,
             marginBottom: 12,
             fontWeight: '400' as const,
         },
         header: {
-            fontSize: isMobile ? 14 : 16,
+            fontSize: isMobile ? 16 : 18,
             fontWeight: '500' as const,
             marginBottom: 32,
             color: '#A0AEC0',
@@ -246,7 +247,7 @@ export default function SignUpScreen() {
             width: '100%',
         },
         label: {
-            fontSize: isMobile ? 14 : 15,
+            fontSize: isMobile ? 16 : 17,
             fontWeight: '600' as const,
             color: '#2D3748',
             marginBottom: 12,
@@ -259,7 +260,7 @@ export default function SignUpScreen() {
             borderRadius: 12,
             paddingHorizontal: isMobile ? 16 : 20,
             paddingVertical: isMobile ? 16 : 18,
-            fontSize: isMobile ? 16 : 17,
+            fontSize: isMobile ? 18 : 19,
             color: '#2D3748',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -279,7 +280,7 @@ export default function SignUpScreen() {
         },
         errorText: {
             color: '#E53E3E',
-            fontSize: 13,
+            fontSize: 15,
             marginTop: 6,
             marginLeft: 4,
             fontWeight: '500' as const,
@@ -305,7 +306,7 @@ export default function SignUpScreen() {
         },
         passwordInput: {
             flex: 1,
-            fontSize: isMobile ? 16 : 17,
+            fontSize: isMobile ? 18 : 19,
             color: '#2D3748',
             paddingRight: 12,
         },
@@ -328,7 +329,7 @@ export default function SignUpScreen() {
             borderRadius: 2,
         },
         passwordStrengthText: {
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: '600' as const,
             marginBottom: 4,
         },
@@ -341,12 +342,12 @@ export default function SignUpScreen() {
             marginBottom: 2,
         },
         passwordCriteriaIcon: {
-            fontSize: 12,
+            fontSize: 14,
             marginRight: 6,
             fontWeight: 'bold' as const,
         },
         passwordCriteriaText: {
-            fontSize: 12,
+            fontSize: 14,
             color: '#718096',
         },
         passwordCriteriaValid: {
@@ -371,7 +372,7 @@ export default function SignUpScreen() {
             backgroundColor: '#F7FAFC',
         },
         clearButtonText: {
-            fontSize: isMobile ? 14 : 16,
+            fontSize: isMobile ? 16 : 18,
             color: '#718096',
             fontWeight: '500' as const,
         },
@@ -392,12 +393,12 @@ export default function SignUpScreen() {
             elevation: 2,
         },
         pickerText: {
-            fontSize: isMobile ? 16 : 17,
+            fontSize: isMobile ? 18 : 19,
             color: '#A0AEC0',
             fontWeight: '400' as const,
         },
         pickerSelectedText: {
-            fontSize: isMobile ? 16 : 17,
+            fontSize: isMobile ? 18 : 19,
             color: '#2D3748',
             fontWeight: '500' as const,
         },
@@ -498,11 +499,11 @@ export default function SignUpScreen() {
         },
         checkboxIcon: {
             color: '#FFFFFF',
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: 'bold' as const,
         },
         captchaText: {
-            fontSize: isMobile ? 15 : 16,
+            fontSize: isMobile ? 17 : 18,
             color: '#2D3748',
             fontWeight: '500' as const,
             flex: 1,
@@ -538,7 +539,7 @@ export default function SignUpScreen() {
             shadowOpacity: 0.1,
         },
         submitButtonText: {
-            fontSize: isMobile ? 17 : 18,
+            fontSize: isMobile ? 19 : 20,
             fontWeight: '700' as const,
             color: '#FFFFFF',
             marginRight: 8,
@@ -901,11 +902,11 @@ export default function SignUpScreen() {
             <View style={styles.logoHeader}>
                 <View style={styles.logoContainer}>
                     <Image 
-                        source={require('../assets/images/logo.jpg')} 
+                        source={require('../assets/images/Dev-logo.svg')} 
                         style={styles.logoImage} 
                     />
                 </View>
-                <Text style={styles.welcomeText}>Welcome to iscore</Text>
+                <Text style={styles.welcomeText}>Welcome to Kepler</Text>
                 <Text style={styles.subtitleText}>Your Credit Score Journey Starts Here</Text>
             </View>
             

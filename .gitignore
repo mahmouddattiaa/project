@@ -33,3 +33,39 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+
+# Coverage directory
+coverage/
+*.lcov
+
+# Authentication & API Keys
+config/keys.js
+config/prod_keys.js
+
+# Email service credentials
+email-server/.env
+email-server/config/
+
+# Database
+*.sqlite
+*.db
+
+# Backup files
+*.backup
+*.bak
+
+# Testing
+.nyc_output/
+
+# Build artifacts
+build/

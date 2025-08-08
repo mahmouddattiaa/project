@@ -43,10 +43,10 @@ app.post('/api/send-report', upload.single('report'), async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'focusritual1@gmail.com',
       to: recipientEmail || process.env.EMAIL_RECIPIENT || 'mahmouddattiaa7@gmail.com',
-      subject: `Credit Report Request - ${language === 'english' ? 'English' : 'Arabic'} - iScore`,
+      subject: `Credit Report Request - ${language === 'english' ? 'English' : 'Arabic'} - Kepler`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #8B5CF6;">iScore Credit Report</h2>
+          <h2 style="color: #8B5CF6;">Kepler Credit Report</h2>
           
           <p>Dear Customer,</p>
           
@@ -79,7 +79,7 @@ app.post('/api/send-report', upload.single('report'), async (req, res) => {
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 12px;">
               Best regards,<br>
-              iScore Credit Services Team<br><br>
+              Kepler Credit Services Team<br><br>
               This is an automated email. Please do not reply to this message.
             </p>
           </div>
@@ -138,10 +138,10 @@ app.post('/api/send-report-local', async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'focusritual1@gmail.com',
       to: process.env.EMAIL_RECIPIENT || 'mahmouddattiaa7@gmail.com',
-      subject: `Credit Report Request - ${language === 'english' ? 'English' : 'Arabic'} - iScore`,
+      subject: `Credit Report Request - ${language === 'english' ? 'English' : 'Arabic'} - Kepler`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #8B5CF6;">iScore Credit Report</h2>
+          <h2 style="color: #8B5CF6;">Kepler Credit Report</h2>
           
           <p>Dear Customer,</p>
           
@@ -174,7 +174,7 @@ app.post('/api/send-report-local', async (req, res) => {
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #666; font-size: 12px;">
               Best regards,<br>
-              iScore Credit Services Team<br><br>
+              Kepler Credit Services Team<br><br>
               This is an automated email. Please do not reply to this message.
             </p>
           </div>

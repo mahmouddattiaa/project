@@ -1,4 +1,4 @@
-# iScore Automatic Email Server Setup
+# Kepler Automatic Email Server Setup
 
 This email server enables automatic sending of credit reports from `focusritual1@gmail.com` to `mahmouddattiaa7@gmail.com`.
 

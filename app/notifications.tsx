@@ -62,7 +62,7 @@ export default function NotificationsScreen() {
                 <View style={styles.headerLeft}>
                     <View style={styles.logoContainer}>
                         <Image 
-                            source={require('../assets/images/logo.jpg')} 
+                            source={require('../assets/images/Dev-logo.svg')} 
                             style={styles.headerLogo} 
                         />
                     </View>
@@ -112,9 +112,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerLogo: {
-        width: 60,
-        height: 20,
-        resizeMode: 'contain',
+        width: 120,
+        height: 42,
+        resizeMode: 'stretch',
+        backgroundColor: 'transparent',
     },
     headerTitle: {
         fontSize: 20,

@@ -104,9 +104,10 @@ export default function SignInScreen() {
             overflow: 'hidden' as const,
         },
         logoImage: {
-            width: isMobile ? 120 : 150,
-            height: isMobile ? 35 : 45,
-            resizeMode: 'contain',
+            width: isMobile ? 320 : 400,
+            height: isMobile ? 120 : 150,
+            resizeMode: 'stretch',
+            backgroundColor: 'transparent',
         },
         welcomeText: {
             fontSize: isMobile ? 24 : 28,
@@ -336,7 +337,7 @@ export default function SignInScreen() {
             <View style={styles.logoHeader}>
                 <View style={styles.logoContainer}>
                     <Image 
-                        source={require('../assets/images/logo.jpg')} 
+                        source={require('../assets/images/Dev-logo.svg')} 
                         style={styles.logoImage} 
                     />
                 </View>

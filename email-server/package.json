@@ -1,7 +1,7 @@
 {
-  "name": "iscore-email-server",
+  "name": "kepler-email-server",
   "version": "1.0.0",
-  "description": "Email server for iScore credit reports",
+  "description": "Email server for Kepler credit reports",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -18,6 +18,6 @@
     "nodemon": "^3.0.2"
   },
   "keywords": ["email", "pdf", "credit-report"],
-  "author": "iScore Team",
+  "author": "Kepler Team",
   "license": "MIT"
 }
